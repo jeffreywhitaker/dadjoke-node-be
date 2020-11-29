@@ -1,0 +1,17 @@
+{
+  "name": "dadjoke-node-be",
+  "version": "1.0.0",
+  "description": "An express backend for Dadjoke",
+  "main": "index.js",
+  "repository": "https://github.com/jeffreywhitaker/dadjoke-node-be.git",
+  "author": "Jeffrey Whitaker <jeffrey.david.whitaker@zoho.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^4.2.0",
+    "morgan": "^1.10.0",
+    "passport": "^0.4.1"
+  }
+}
