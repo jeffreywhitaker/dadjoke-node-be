@@ -9,6 +9,8 @@ import mongoose from "mongoose";
 import connectMongo from "connect-mongo";
 // import passportConfig from "./config/passportConfig.js";
 
+import jokeRoutes from "./routes/jokeRoutes.js";
+
 const MongoStore = connectMongo(session);
 
 // make server
@@ -49,6 +51,7 @@ server.use(session(sessionOptions));
 // rate limits?
 
 // routes?
+server.use(jokeRoutes);
 
 // export
 export default server;

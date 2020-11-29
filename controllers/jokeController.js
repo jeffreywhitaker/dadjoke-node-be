@@ -1,6 +1,21 @@
 import DadJoke from "../models/jokes.js";
 import User from "../models/user.js";
 
+export function createJoke(req, res) {
+  const newJoke = new DadJoke({
+    dadjokequestion: req.body.dadjokequestion,
+    dadjokeanswer: req.body.dadjkoeanswer,
+    isprivate: req.body.isprivate,
+  });
+
+  newJoke
+    .save()
+    .then(() => {
+      res.status(200);
+    })
+    .catch(() => {});
+}
+
 export function getPublicJokes(req, res) {
   // parse url?
 
