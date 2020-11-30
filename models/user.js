@@ -16,7 +16,6 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  jokes: [{ type: mongoose.Schema.Types.ObjectId, ref: "DadJoke" }],
   isAdmin: { type: Boolean, required: true, default: false },
   createdAt: { type: Date, default: Date.now },
 });

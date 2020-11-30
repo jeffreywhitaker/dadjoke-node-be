@@ -34,6 +34,9 @@ server.use(bodyParser.json());
 const storeOptions = {
   mongooseConnection: mongoose.connection,
   collection: "sessions",
+  autoRemove: "interval",
+  autoRemoveInterval: 10, // in minutes
+  touchAfter: 1 * 3600, // time in seconds -- one hour
 };
 
 const sessionStore = new MongoStore(storeOptions);
@@ -41,11 +44,12 @@ const sessionStore = new MongoStore(storeOptions);
 const sessionOptions = {
   secret: process.env.SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   store: sessionStore,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
   },
+  rolling: true,
 };
 
 server.use(session(sessionOptions));
