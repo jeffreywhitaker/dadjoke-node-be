@@ -7,9 +7,11 @@ import passport from "passport";
 import session from "express-session";
 import mongoose from "mongoose";
 import connectMongo from "connect-mongo";
-// import passportConfig from "./config/passportConfig.js";
+import passportConfig from "./config/passportConfig.js";
+import cookieParser from "cookie-parser";
 
 import jokeRoutes from "./routes/jokeRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 const MongoStore = connectMongo(session);
 
@@ -19,7 +21,12 @@ const server = express();
 // basic middleware
 server.use(cors());
 server.use(helmet());
-server.use(morgan("combined"));
+server.use(
+  morgan(
+    "[:date[iso]] :method :url :status :res[content-length] - :response-time ms"
+  )
+);
+server.use(cookieParser()); // read cookies (needed for auth)
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
 
@@ -44,14 +51,17 @@ const sessionOptions = {
 server.use(session(sessionOptions));
 
 // init passport
-// passportConfig(passport);
-// server.use(passport.initialize());
-// server.use(passport.session());
+console.log("first");
+passportConfig(passport);
+server.use(passport.initialize());
+server.use(passport.session());
 
 // rate limits?
 
 // routes?
 server.use(jokeRoutes);
+server.use(userRoutes);
+console.log("second");
 
 // export
 export default server;
