@@ -15,23 +15,29 @@ export const login = (req, res, next) => {
     // if no user
     if (!user) throw err;
 
-    console.log("before logIn");
-    return res.status(200);
-
     req.logIn(user, function (err) {
-      console.log("after logIn");
-      console.log("err", err);
       if (err) console.log("weird err", err);
-      console.log("after login 2");
-      return res.status(200);
+
+      return res.sendStatus(200);
     });
   })(req, res, next);
 };
 
+export function getUserFromCookie(req, res) {
+  console.log("user in req", req.user);
+
+  try {
+    const username = req.user.username;
+    res.status(200).json({ username });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+}
+
 export function logout(req, res) {
   try {
     req.session.destroy();
-    return res.status(200);
+    return res.sendStatus(200);
   } catch (err) {
     return res.status(400).json(err);
   }
@@ -56,8 +62,8 @@ export function signup(req, res, next) {
         newUser
           .save()
           .then((user) => {
-            req.logIn(user, function (err) {
-              if (err) res.status(400).json(err);
+            req.logIn(user, function (error) {
+              if (error) res.status(400).json({ error });
               res.status(200);
             });
           })
@@ -74,7 +80,7 @@ export function deleteSelf(req, res, next) {
     if (!user) res.status(400).json({ error: "no user" });
     try {
       user.destroy();
-      res.status(200);
+      res.sendStatus(200);
     } catch (error) {
       res.status(400).json({ error });
     }

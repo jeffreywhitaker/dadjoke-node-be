@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const jokeSchema = new Schema({
   creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  username: { type: String, required: true },
   dadjokequestion: String,
   dadjokeanswer: String,
   isprivate: { type: Boolean, required: true },

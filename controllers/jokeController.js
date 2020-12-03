@@ -1,19 +1,30 @@
+import passport from "passport";
 import DadJoke from "../models/jokes.js";
 import User from "../models/user.js";
 
 export function createJoke(req, res) {
+  console.log("inside createJOke");
+  console.log("user on req", req.user);
+  console.log("body on req", req.body);
+
   const newJoke = new DadJoke({
     dadjokequestion: req.body.dadjokequestion,
-    dadjokeanswer: req.body.dadjkoeanswer,
+    dadjokeanswer: req.body.dadjokeanswer,
     isprivate: req.body.isprivate,
+    creator: req.user._id,
+    username: req.user.username,
   });
+
+  console.log("new Joke: ", newJoke);
 
   newJoke
     .save()
-    .then(() => {
-      res.status(200);
+    .then((joke) => {
+      res.status(200).json(joke);
     })
-    .catch(() => {});
+    .catch((error) => {
+      res.status(400).json({ error });
+    });
 }
 
 export function getPublicJokes(req, res) {
@@ -25,26 +36,35 @@ export function getPublicJokes(req, res) {
   };
 
   // access db and send
-  DadJoke.find(criteria).exec((err, jokes) => {
-    if (err) throw err;
-    res.status(200).json(jokes);
-  });
+  DadJoke.find(criteria)
+    .select("-creator")
+    .exec((err, jokes) => {
+      if (err) throw err;
+      res.status(200).json(jokes);
+    });
 }
 
 export function getPrivateJokes(req, res) {
   // parse url?
+  if (!req.user._id) {
+    res
+      .status(400)
+      .json({ error: "You must be logged in to get your private jokes." });
+  }
 
   // set criteria
   const criteria = {
     isprivate: true,
-    creator: req.params.userId,
+    creator: req.user._id,
   };
 
   // access db and send
-  DadJoke.find(criteria).exec((err, jokes) => {
-    if (err) throw err;
-    res.status(200).json(jokes);
-  });
+  DadJoke.find(criteria)
+    .select("-creator")
+    .exec((err, jokes) => {
+      if (err) throw err;
+      res.status(200).json(jokes);
+    });
 }
 
 export function updateJoke(req, res) {
@@ -52,12 +72,21 @@ export function updateJoke(req, res) {
 
   // access db and send
   DadJoke.findById(req.params._id).exec((err, joke) => {
+    // make sure it's their joke
+    if (joke.creator !== req.user._id) {
+      return res.status(400).json({ error: "this is not your joke" });
+    }
+
     joke.dadjokequestion = res.body.dadjokequestion;
     joke.dadjokeanswer = req.body.dadjokeanswer;
     joke.isprivate = req.body.isprivate;
 
-    joke.save();
-    res.status(200).json(joke);
+    joke
+      .save()
+      .then((joke) => {
+        res.status(200).json(joke);
+      })
+      .catch((error) => res.status(400).json({ error }));
   });
 }
 
@@ -65,10 +94,20 @@ export function deleteJoke(req, res) {
   // parse url?
 
   // access db and send
-  DadJoke.findById(req.params._id).exec((err, joke) => {
+  DadJoke.findById(req.params.id).exec((err, joke) => {
+    console.log("found joke to del", joke);
+    console.log("joke.creator", typeof joke.creator);
+    console.log("req.user.id", typeof req.user._id);
+    if (parseInt(joke.creator) !== parseInt(req.user._id)) {
+      return res.status(400).json({ error: "this is not your joke " });
+    }
+
+    console.log("here");
     joke.remove((err) => {
+      console.log("there");
+      console.log("err", err);
       if (err) throw err;
-      res.status(200);
+      res.sendStatus(200);
     });
   });
 }

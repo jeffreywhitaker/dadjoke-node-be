@@ -1,5 +1,11 @@
 import express from "express";
-import { createJoke, getPublicJokes } from "../controllers/jokeController.js";
+import passport from "passport";
+import {
+  createJoke,
+  deleteJoke,
+  getPrivateJokes,
+  getPublicJokes,
+} from "../controllers/jokeController.js";
 
 const router = express.Router();
 
@@ -9,11 +15,22 @@ const router = express.Router();
 router.get("/dadjokes/public", getPublicJokes);
 
 // @route POST api/jokes/create
-// @desc Add a joke to the database
+// @desc Create a dadjoke associated with the user
 // @access Private
-router.get("/dadjokes/add", auth, createJoke);
+router.post("/dadjokes/add", auth, createJoke);
+
+// @route GET api/jokes/private
+// @desc Return array of user's private dadjokes
+// @access Private
+router.get("/dadjokes/private", auth, getPrivateJokes);
+
+// @route DELETE api/jokes/:id
+// @desc Finds joke via ID and deletes it
+// @access Private
+router.delete("/dadjokes/:id", auth, deleteJoke);
 
 function auth(req, res, next) {
+  console.log("inside auth func");
   next();
 }
 

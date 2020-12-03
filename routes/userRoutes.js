@@ -1,5 +1,10 @@
 import express from "express";
-import { deleteSelf, login, signup } from "../controllers/userController.js";
+import {
+  deleteSelf,
+  getUserFromCookie,
+  login,
+  signup,
+} from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -16,7 +21,9 @@ router.post("/createnewuser", signup);
 // @route POST api/users/signup
 // @desc User signup
 // @access Public
-router.post("/deleteuser", auth, deleteSelf);
+router.post("/deleteuser", deleteSelf);
+
+router.get("/cookie", getUserFromCookie);
 
 const auth = (req, res, next) => {
   if (req.isAuthenticated()) next();

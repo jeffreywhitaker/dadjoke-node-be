@@ -19,13 +19,16 @@ const MongoStore = connectMongo(session);
 const server = express();
 
 // basic middleware
-server.use(cors());
+server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+
 server.use(helmet());
-server.use(
-  morgan(
-    "[:date[iso]] :method :url :status :res[content-length] - :response-time ms"
-  )
-);
+// server.use(
+//   morgan(
+//     "[:date[iso]] :method :url :status :res[content-length] - :response-time ms"
+//   )
+// );
+server.use(morgan("dev"));
+
 server.use(cookieParser()); // read cookies (needed for auth)
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
