@@ -1,6 +1,7 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import passport from "passport";
+import DadJoke from "../models/jokes.js";
 
 export const login = (req, res, next) => {
   console.log("inside login func 1");
@@ -74,15 +75,19 @@ export function signup(req, res, next) {
 }
 
 export function deleteSelf(req, res, next) {
-  console.log("inside delete");
-  passport.authenticate("local", (err, user, info) => {
-    if (err) throw err;
-    if (!user) res.status(400).json({ error: "no user" });
-    try {
+  try {
+    DadJoke.find({ creator: req.user._id }).exec((err, jokes) => {
+      jokes.forEach((joke) => {
+        joke.destroy();
+      });
+    });
+
+    User.findById(req.user._id).exec((err, user) => {
+      if (!user) res.status(400).json({ error: "no user" });
       user.destroy();
       res.sendStatus(200);
-    } catch (error) {
-      res.status(400).json({ error });
-    }
-  });
+    });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
 }

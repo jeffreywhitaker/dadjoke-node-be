@@ -19,10 +19,13 @@ router.post("/login", login);
 router.post("/createnewuser", signup);
 
 // @route POST api/users/signup
-// @desc User signup
-// @access Public
-router.post("/deleteuser", deleteSelf);
+// @desc Deletes the user, as well as their jokes
+// @access Private
+router.post("/deleteuser", auth, deleteSelf);
 
+// @route POST api/users/signup
+// @desc Uses cookie to attempt an automatic login
+// @access Private
 router.get("/cookie", getUserFromCookie);
 
 const auth = (req, res, next) => {
