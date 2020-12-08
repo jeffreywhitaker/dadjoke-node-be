@@ -1,10 +1,12 @@
 import express from "express";
-import passport from "passport";
+
 import {
   createJoke,
   deleteJoke,
   getPrivateJokes,
   getPublicJokes,
+  updateJoke,
+  updateJokeVote,
 } from "../controllers/jokeController.js";
 
 const router = express.Router();
@@ -24,10 +26,20 @@ router.post("/dadjokes/add", auth, createJoke);
 // @access Private
 router.get("/dadjokes/private", auth, getPrivateJokes);
 
+// @route PUT api/jokes/:id
+// @desc Finds joke via ID and updates it
+// @access Private
+router.put("/dadjokes/:_id", auth, updateJoke);
+
 // @route DELETE api/jokes/:id
 // @desc Finds joke via ID and deletes it
 // @access Private
-router.delete("/dadjokes/:id", auth, deleteJoke);
+router.delete("/dadjokes/:_id", auth, deleteJoke);
+
+// @route POST api/jokes/vote/:id
+// @desc Adds an upvote or downvote (or no vote) to the joke
+// @access Private
+router.post("/dadjokes/vote/:_id", auth, updateJokeVote);
 
 function auth(req, res, next) {
   console.log("inside auth func");

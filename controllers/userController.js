@@ -19,7 +19,11 @@ export const login = (req, res, next) => {
     req.logIn(user, function (err) {
       if (err) console.log("weird err", err);
 
-      return res.sendStatus(200);
+      const username = user.username;
+      const jokesUpvoted = user.jokesUpvoted;
+      const jokesDownvoted = user.jokesDownvoted;
+
+      res.status(200).json({ username, jokesUpvoted, jokesDownvoted });
     });
   })(req, res, next);
 };
@@ -29,7 +33,13 @@ export function getUserFromCookie(req, res) {
 
   try {
     const username = req.user.username;
-    res.status(200).json({ username });
+    const jokesUpvoted = req.user.jokesUpvoted;
+    const jokesDownvoted = req.user.jokesDownvoted;
+    res.status(200).json({
+      username,
+      jokesUpvoted,
+      jokesDownvoted,
+    });
   } catch (error) {
     res.status(400).json({ error });
   }
@@ -65,7 +75,12 @@ export function signup(req, res, next) {
           .then((user) => {
             req.logIn(user, function (error) {
               if (error) res.status(400).json({ error });
-              res.status(200);
+
+              const username = user.username;
+              const jokesUpvoted = user.jokesUpvoted;
+              const jokesDownvoted = user.jokesDownvoted;
+
+              res.status(200).json({ username, jokesUpvoted, jokesDownvoted });
             });
           })
           .catch((err) => console.log(err));

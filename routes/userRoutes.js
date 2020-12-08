@@ -6,6 +6,11 @@ import {
   signup,
 } from "../controllers/userController.js";
 
+const auth = (req, res, next) => {
+  if (req.isAuthenticated()) next();
+  res.status(400).json({ error: "you must be logged in" });
+};
+
 const router = express.Router();
 
 // @route POST api/users/login
@@ -28,9 +33,5 @@ router.post("/deleteuser", auth, deleteSelf);
 // @access Private
 router.get("/cookie", getUserFromCookie);
 
-const auth = (req, res, next) => {
-  if (req.isAuthenticated()) next();
-  res.status(400).json({ error: "you must be logged in" });
-};
 // export
 export default router;

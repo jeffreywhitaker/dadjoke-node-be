@@ -7,6 +7,17 @@ const jokeSchema = new Schema({
   dadjokequestion: String,
   dadjokeanswer: String,
   isprivate: { type: Boolean, required: true },
+
+  // votes
+  karma: { type: Number, default: 0 },
+  usersUpvoting: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "User", unique: true },
+  ],
+  usersDownvoting: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "User", unique: true },
+  ],
+
+  // misc
   createdAt: { type: Date, default: Date.now },
 });
 
