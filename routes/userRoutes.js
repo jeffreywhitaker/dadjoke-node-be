@@ -2,7 +2,9 @@ import express from "express";
 import {
   deleteSelf,
   getUserFromCookie,
+  getProfileStats,
   login,
+  logout,
   signup,
 } from "../controllers/userController.js";
 
@@ -32,6 +34,13 @@ router.post("/deleteuser", auth, deleteSelf);
 // @desc Uses cookie to attempt an automatic login
 // @access Private
 router.get("/cookie", getUserFromCookie);
+
+// @route GET api/users/logout
+// @desc Uses cookie to attempt an automatic login
+// @access Private
+router.get("/logout", logout);
+
+router.get("/stats", getProfileStats);
 
 // export
 export default router;

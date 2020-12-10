@@ -106,3 +106,30 @@ export function deleteSelf(req, res, next) {
     res.status(400).json({ error });
   }
 }
+
+export async function getProfileStats(req, res) {
+  try {
+    const objToSend = {};
+    // count number of public jokes
+    objToSend.publicJokesCount = await DadJoke.countDocuments({
+      creator: req.user._id,
+      isprivate: false,
+    });
+    // count number of private jokes
+    objToSend.privateJokesCount = await DadJoke.countDocuments({
+      creator: req.user._id,
+      isprivate: true,
+    });
+    // count number of upvotes
+    objToSend.upvoteCount = req.user.jokesUpvoted.length;
+    // count number of downvotes
+    objToSend.downvoteCount = req.user.jokesDownvoted.length;
+    // date account created
+    objToSend.accountCreationDate = req.user.createdAt;
+
+    // send
+    res.status(200).json(objToSend);
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+}

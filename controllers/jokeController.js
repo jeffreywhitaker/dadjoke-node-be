@@ -1,5 +1,6 @@
 import passport from "passport";
 import DadJoke from "../models/jokes.js";
+import user from "../models/user.js";
 import User from "../models/user.js";
 
 export function createJoke(req, res) {
@@ -37,9 +38,23 @@ export function getPublicJokes(req, res) {
 
   // access db and send
   DadJoke.find(criteria)
-    .select("-creator")
+    .select("-creator -usersUpvoting -usersDownvoting")
+    .lean()
     .exec((err, jokes) => {
       if (err) throw err;
+      if (req.user) {
+        const user = req.user;
+
+        jokes.forEach((joke) => {
+          if (user.jokesUpvoted.indexOf(joke._id) !== -1) {
+            joke.userVote = "1";
+          } else if (user.jokesDownvoted.indexOf(joke._id) !== -1) {
+            joke.userVote = "-1";
+          } else {
+            joke.userVote = "0";
+          }
+        });
+      }
       res.status(200).json(jokes);
     });
 }
@@ -60,9 +75,23 @@ export function getPrivateJokes(req, res) {
 
   // access db and send
   DadJoke.find(criteria)
-    .select("-creator")
+    .select("-creator -usersUpvoting -usersDownvoting")
+    .lean()
     .exec((err, jokes) => {
       if (err) throw err;
+      if (req.user) {
+        const user = req.user;
+
+        jokes.forEach((joke) => {
+          if (user.jokesUpvoted.indexOf(joke._id) !== -1) {
+            joke.userVote = "1";
+          } else if (user.jokesDownvoted.indexOf(joke._id) !== -1) {
+            joke.userVote = "-1";
+          } else {
+            joke.userVote = "0";
+          }
+        });
+      }
       res.status(200).json(jokes);
     });
 }
