@@ -107,7 +107,7 @@ export function deleteSelf(req, res, next) {
   }
 }
 
-export async function getProfileStats(req, res) {
+export async function getOwnProfileStats(req, res) {
   try {
     const objToSend = {};
     // count number of public jokes

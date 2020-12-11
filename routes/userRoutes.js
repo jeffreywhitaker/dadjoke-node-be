@@ -40,7 +40,8 @@ router.get("/cookie", getUserFromCookie);
 // @access Private
 router.get("/logout", logout);
 
-router.get("/stats", getProfileStats);
+// stats for own profile
+router.get("/stats", getOwnProfileStats);
 
 // export
 export default router;
