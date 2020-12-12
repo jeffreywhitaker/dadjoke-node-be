@@ -20,8 +20,8 @@ export const login = (req, res, next) => {
       if (err) console.log("weird err", err);
 
       const username = user.username;
-      const jokesUpvoted = user.jokesUpvoted;
-      const jokesDownvoted = user.jokesDownvoted;
+      // const jokesUpvoted = user.jokesUpvoted;
+      // const jokesDownvoted = user.jokesDownvoted;
 
       res.status(200).json({ username, jokesUpvoted, jokesDownvoted });
     });
@@ -127,6 +127,36 @@ export async function getOwnProfileStats(req, res) {
     // date account created
     objToSend.accountCreationDate = req.user.createdAt;
 
+    // send
+    res.status(200).json(objToSend);
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+}
+
+export async function getOtherUserProfileStats(req, res) {
+  try {
+    const username = req.params.username;
+    const user = await User.findOne({ username });
+    const objToSend = {};
+    // count number of public jokes
+    objToSend.publicJokesCount = await DadJoke.countDocuments({
+      creator: user._id,
+      isprivate: false,
+    });
+    // count number of private jokes
+    objToSend.privateJokesCount = await DadJoke.countDocuments({
+      creator: user._id,
+      isprivate: true,
+    });
+    // count number of upvotes
+    objToSend.upvoteCount = user.jokesUpvoted.length;
+    // count number of downvotes
+    objToSend.downvoteCount = user.jokesDownvoted.length;
+    // date account created
+    objToSend.accountCreationDate = user.createdAt;
+    // username
+    objToSend.username = user.username;
     // send
     res.status(200).json(objToSend);
   } catch (error) {

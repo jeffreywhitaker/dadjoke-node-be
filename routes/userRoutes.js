@@ -2,6 +2,7 @@ import express from "express";
 import {
   deleteSelf,
   getUserFromCookie,
+  getOtherUserProfileStats,
   getProfileStats,
   login,
   logout,
@@ -41,7 +42,8 @@ router.get("/cookie", getUserFromCookie);
 router.get("/logout", logout);
 
 // stats for own profile
-router.get("/stats", getOwnProfileStats);
+router.get("/users/profile", getOwnProfileStats);
+router.get("/users/profile/:username", getOtherUserProfileStats);
 
 // export
 export default router;
