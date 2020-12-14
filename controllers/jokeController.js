@@ -29,16 +29,35 @@ export function createJoke(req, res) {
 }
 
 export function getPublicJokes(req, res) {
+  // get response criteria from req
+  const responseCriteria = {
+    sortBy: "newest",
+    resultsPerPage: "5",
+  };
+
+  if (req.body.sortBy) {
+    responseCriteria.sortBy = req.body.sortBy;
+  }
+  if (req.body.resultsPerPage) {
+    responseCriteria.resultsPerPage = req.body.resultsPerPage;
+  }
   // parse url?
+
+  // TODO: get response criteria from req
 
   // set criteria
   const criteria = {
     isprivate: false,
   };
 
+  console.log("sortby: ", responseCriteria.sortBy);
+  console.log("results per page: ", responseCriteria.resultsPerPage);
+
   // access db and send
   DadJoke.find(criteria)
     .select("-creator -usersUpvoting -usersDownvoting")
+    .sort(responseCriteria.sortBy)
+    .limit(parseInt(responseCriteria.resultsPerPage))
     .lean()
     .exec((err, jokes) => {
       if (err) throw err;
@@ -60,6 +79,19 @@ export function getPublicJokes(req, res) {
 }
 
 export function getPrivateJokes(req, res) {
+  // TODO: get response criteria from req
+  const responseCriteria = {
+    sortBy: "newest",
+    resultsPerPage: "5",
+  };
+
+  if (req.body.sortBy) {
+    responseCriteria.sortBy = req.body.sortBy;
+  }
+  if (req.body.resultsPerPage) {
+    responseCriteria.resultsPerPage = req.body.resultsPerPage;
+  }
+
   // parse url?
   if (!req.user._id) {
     res
@@ -76,6 +108,8 @@ export function getPrivateJokes(req, res) {
   // access db and send
   DadJoke.find(criteria)
     .select("-creator -usersUpvoting -usersDownvoting")
+    .sort(responseCriteria.sortBy)
+    .limit(parseInt(responseCriteria.resultsPerPage))
     .lean()
     .exec((err, jokes) => {
       if (err) throw err;

@@ -3,7 +3,7 @@ import {
   deleteSelf,
   getUserFromCookie,
   getOtherUserProfileStats,
-  getProfileStats,
+  getOwnProfileStats,
   login,
   logout,
   signup,

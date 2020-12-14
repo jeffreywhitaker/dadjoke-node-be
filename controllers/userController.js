@@ -126,6 +126,8 @@ export async function getOwnProfileStats(req, res) {
     objToSend.downvoteCount = req.user.jokesDownvoted.length;
     // date account created
     objToSend.accountCreationDate = req.user.createdAt;
+    // username
+    objToSend.username = req.user.username;
 
     // send
     res.status(200).json(objToSend);
