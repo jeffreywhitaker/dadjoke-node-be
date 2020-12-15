@@ -34,41 +34,35 @@ server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
 
 // session middleware
-const storeOptions = {
-  mongooseConnection: mongoose.connection,
-  collection: "sessions",
-  autoRemove: "interval",
-  autoRemoveInterval: 10, // in minutes
-  touchAfter: 1 * 3600, // time in seconds -- one hour
-};
-
-const sessionStore = new MongoStore(storeOptions);
-
-const sessionOptions = {
-  secret: process.env.SECRET,
-  resave: false,
-  saveUninitialized: false,
-  store: sessionStore,
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
-  },
-  rolling: true,
-};
-
-server.use(session(sessionOptions));
+server.use(
+  session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection,
+      collection: "sessions",
+      autoRemove: "interval",
+      autoRemoveInterval: 10, // in minutes
+      touchAfter: 1 * 3600, // time in seconds -- one hour
+    }),
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
+    },
+    rolling: true,
+  })
+);
 
 // init passport
-console.log("first");
 passportConfig(passport);
 server.use(passport.initialize());
 server.use(passport.session());
 
 // rate limits?
 
-// routes?
-server.use(jokeRoutes);
-server.use(userRoutes);
-console.log("second");
+// routes
+server.use("/api/jokes/", jokeRoutes);
+server.use("/api/users/", userRoutes);
 
 // export
 export default server;

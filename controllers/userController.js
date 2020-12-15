@@ -6,10 +6,6 @@ import DadJoke from "../models/jokes.js";
 export const login = (req, res, next) => {
   console.log("inside login func 1");
   passport.authenticate("local", function (err, user) {
-    console.log("inside login func 2");
-    console.log("err", err);
-    console.log("user", user);
-    console.log("req", req.body);
     // if err
     if (err) throw err;
 
@@ -23,7 +19,7 @@ export const login = (req, res, next) => {
       // const jokesUpvoted = user.jokesUpvoted;
       // const jokesDownvoted = user.jokesDownvoted;
 
-      res.status(200).json({ username, jokesUpvoted, jokesDownvoted });
+      res.status(200).json({ username });
     });
   })(req, res, next);
 };
@@ -33,12 +29,8 @@ export function getUserFromCookie(req, res) {
 
   try {
     const username = req.user.username;
-    const jokesUpvoted = req.user.jokesUpvoted;
-    const jokesDownvoted = req.user.jokesDownvoted;
     res.status(200).json({
       username,
-      jokesUpvoted,
-      jokesDownvoted,
     });
   } catch (error) {
     res.status(400).json({ error });

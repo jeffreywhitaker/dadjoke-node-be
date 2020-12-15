@@ -29,9 +29,9 @@ router.post("/createnewuser", signup);
 // @route POST api/users/signup
 // @desc Deletes the user, as well as their jokes
 // @access Private
-router.post("/deleteuser", auth, deleteSelf);
+router.post("/deleteself", auth, deleteSelf);
 
-// @route POST api/users/signup
+// @route POST api/users/cookie
 // @desc Uses cookie to attempt an automatic login
 // @access Private
 router.get("/cookie", getUserFromCookie);
@@ -42,8 +42,8 @@ router.get("/cookie", getUserFromCookie);
 router.get("/logout", logout);
 
 // stats for own profile
-router.get("/users/profile", getOwnProfileStats);
-router.get("/users/profile/:username", getOtherUserProfileStats);
+router.get("/profile", getOwnProfileStats);
+router.get("/profile/:username", getOtherUserProfileStats);
 
 // export
 export default router;

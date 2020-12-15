@@ -1,6 +1,4 @@
-import passport from "passport";
 import DadJoke from "../models/jokes.js";
-import user from "../models/user.js";
 import User from "../models/user.js";
 
 export function createJoke(req, res) {
@@ -31,16 +29,11 @@ export function createJoke(req, res) {
 export function getPublicJokes(req, res) {
   // get response criteria from req
   const responseCriteria = {
-    sortBy: "newest",
-    resultsPerPage: "5",
+    sortBy: req.body.sortBy || "newest",
+    resultsPerPage: req.body.resultsPerPage || "5",
+    page: req.body.page || 1,
   };
 
-  if (req.body.sortBy) {
-    responseCriteria.sortBy = req.body.sortBy;
-  }
-  if (req.body.resultsPerPage) {
-    responseCriteria.resultsPerPage = req.body.resultsPerPage;
-  }
   // parse url?
 
   // TODO: get response criteria from req
@@ -57,7 +50,8 @@ export function getPublicJokes(req, res) {
   DadJoke.find(criteria)
     .select("-creator -usersUpvoting -usersDownvoting")
     .sort(responseCriteria.sortBy)
-    .limit(parseInt(responseCriteria.resultsPerPage))
+    .limit(parseInt(responseCriteria.resultsPerPage) + 1)
+    .skip((responseCriteria.page - 1) * responseCriteria.resultsPerPage)
     .lean()
     .exec((err, jokes) => {
       if (err) throw err;
@@ -74,23 +68,23 @@ export function getPublicJokes(req, res) {
           }
         });
       }
-      res.status(200).json(jokes);
+      let responseObj = {
+        jokes: jokes ? jokes.slice(0, responseCriteria.resultsPerPage) : [],
+        page: responseCriteria.page,
+        resultsPerPage: responseCriteria.resultsPerPage,
+        hasNextPage: jokes.length > responseCriteria.resultsPerPage,
+      };
+      res.status(200).json(responseObj);
     });
 }
 
 export function getPrivateJokes(req, res) {
-  // TODO: get response criteria from req
+  // get response criteria from req
   const responseCriteria = {
-    sortBy: "newest",
-    resultsPerPage: "5",
+    sortBy: req.body.sortBy || "newest",
+    resultsPerPage: req.body.resultsPerPage || "5",
+    page: req.body.page || 1,
   };
-
-  if (req.body.sortBy) {
-    responseCriteria.sortBy = req.body.sortBy;
-  }
-  if (req.body.resultsPerPage) {
-    responseCriteria.resultsPerPage = req.body.resultsPerPage;
-  }
 
   // parse url?
   if (!req.user._id) {
@@ -109,7 +103,8 @@ export function getPrivateJokes(req, res) {
   DadJoke.find(criteria)
     .select("-creator -usersUpvoting -usersDownvoting")
     .sort(responseCriteria.sortBy)
-    .limit(parseInt(responseCriteria.resultsPerPage))
+    .limit(parseInt(responseCriteria.resultsPerPage) + 1)
+    .skip((responseCriteria.page - 1) * responseCriteria.resultsPerPage)
     .lean()
     .exec((err, jokes) => {
       if (err) throw err;
@@ -126,7 +121,13 @@ export function getPrivateJokes(req, res) {
           }
         });
       }
-      res.status(200).json(jokes);
+      let responseObj = {
+        jokes: jokes ? jokes.slice(0, responseCriteria.resultsPerPage) : [],
+        page: responseCriteria.page,
+        resultsPerPage: responseCriteria.resultsPerPage,
+        hasNextPage: jokes.length > responseCriteria.resultsPerPage,
+      };
+      res.status(200).json(responseObj);
     });
 }
 
@@ -181,6 +182,9 @@ export function updateJokeVote(req, res) {
   // get the new vote from the user (1, 0, or -1)
   const user = req.user;
   console.log("user", user);
+  if (!user) {
+    return res.status(401).json({ error: "Must be logged in to vote" });
+  }
   const vote = req.body.voteNum;
   console.log("req.data", req.data);
   console.log("req.body", req.body);
