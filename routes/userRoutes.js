@@ -8,6 +8,10 @@ import {
   logout,
   signup,
 } from "../controllers/userController.js";
+import {
+  followOtherUser,
+  unfollowOtherUser,
+} from "../controllers/followingController.js";
 
 const auth = (req, res, next) => {
   if (req.isAuthenticated()) next();
@@ -44,6 +48,9 @@ router.get("/logout", logout);
 // stats for own profile
 router.get("/profile", getOwnProfileStats);
 router.get("/profile/:username", getOtherUserProfileStats);
+
+router.post("/follow/:username", followOtherUser);
+router.post("/unfollow/:username", unfollowOtherUser);
 
 // export
 export default router;

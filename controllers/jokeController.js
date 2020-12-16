@@ -2,9 +2,15 @@ import DadJoke from "../models/jokes.js";
 import User from "../models/user.js";
 
 export function createJoke(req, res) {
-  console.log("inside createJOke");
-  console.log("user on req", req.user);
-  console.log("body on req", req.body);
+  const body = req.body;
+  if (
+    !body ||
+    !body.dadjokeanswer ||
+    !body.dadjokequestion ||
+    !body.isprivate
+  ) {
+    return res.status(400).json({ error: "missing required field" });
+  }
 
   const newJoke = new DadJoke({
     dadjokequestion: req.body.dadjokequestion,
@@ -34,17 +40,10 @@ export function getPublicJokes(req, res) {
     page: req.body.page || 1,
   };
 
-  // parse url?
-
-  // TODO: get response criteria from req
-
   // set criteria
   const criteria = {
     isprivate: false,
   };
-
-  console.log("sortby: ", responseCriteria.sortBy);
-  console.log("results per page: ", responseCriteria.resultsPerPage);
 
   // access db and send
   DadJoke.find(criteria)
@@ -55,16 +54,34 @@ export function getPublicJokes(req, res) {
     .lean()
     .exec((err, jokes) => {
       if (err) throw err;
+      // if a logged in user is making this request
       if (req.user) {
         const user = req.user;
 
         jokes.forEach((joke) => {
+          // handle user's vote
           if (user.jokesUpvoted.indexOf(joke._id) !== -1) {
             joke.userVote = "1";
           } else if (user.jokesDownvoted.indexOf(joke._id) !== -1) {
             joke.userVote = "-1";
           } else {
             joke.userVote = "0";
+          }
+
+          console.log(
+            "val of req.user.followingUsers",
+            req.user.followingUsers
+          );
+          // handle user follow
+          // if the user is not following the joke creator
+          console.log(
+            "index is: ",
+            req.user.followingUsers.indexOf(joke.username)
+          );
+          if (req.user.followingUsers.indexOf(joke.username) === -1) {
+            joke.userFollowingCreator = false;
+          } else {
+            joke.userFollowingCreator = true;
           }
         });
       }
@@ -86,9 +103,9 @@ export function getPrivateJokes(req, res) {
     page: req.body.page || 1,
   };
 
-  // parse url?
+  // not logged in?
   if (!req.user._id) {
-    res
+    return res
       .status(400)
       .json({ error: "You must be logged in to get your private jokes." });
   }
@@ -138,8 +155,6 @@ export function updateJoke(req, res) {
   DadJoke.findById(req.params._id).exec((err, joke) => {
     // make sure it's their joke
     if (joke.creator.toString() !== req.user._id.toString()) {
-      console.log("joke.creator", joke.creator);
-      console.log("user id from req", req.user._id);
       return res.status(400).json({ error: "this is not your joke" });
     }
 
@@ -197,7 +212,7 @@ export function updateJokeVote(req, res) {
     // .lean(false)
     .exec((err, joke) => {
       console.log("joke.findbyid", joke);
-      if (err) res.status(400).json(err);
+      if (err) return res.status(400).json(err);
       // handle the vote
       console.log("vote is", vote);
       if (vote === "1") {
@@ -207,12 +222,10 @@ export function updateJokeVote(req, res) {
         }
 
         joke.usersDownvoting.pull(user._id);
-        console.log("inside 1");
       } else if (vote === "0") {
         // remove votes
         joke.usersUpvoting.pull(user._id);
         joke.usersDownvoting.pull(user._id);
-        console.log("inside 0");
       } else if (vote === "-1") {
         // downvote
         joke.usersUpvoting.pull(user._id);
@@ -220,14 +233,10 @@ export function updateJokeVote(req, res) {
         if (!joke.usersDownvoting.includes(user._id)) {
           joke.usersDownvoting.push(user._id);
         }
-
-        console.log("inside -1");
       }
 
       // calculate the new karma
       joke.karma = joke.usersUpvoting.length - joke.usersDownvoting.length;
-
-      console.log("joke karma", joke.karma);
 
       // save
       jokeToReturn = joke;
@@ -257,6 +266,7 @@ export function updateJokeVote(req, res) {
     user.save();
   });
 
+  // TODO: make this async function so this res happens after waiting for db access, or use async.parallel
   // return the joke
   res.send(200).json(jokeToReturn);
 }

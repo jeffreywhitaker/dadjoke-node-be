@@ -13,11 +13,9 @@ export const login = (req, res, next) => {
     if (!user) throw err;
 
     req.logIn(user, function (err) {
-      if (err) console.log("weird err", err);
+      if (err) console.log("login err", err);
 
       const username = user.username;
-      // const jokesUpvoted = user.jokesUpvoted;
-      // const jokesDownvoted = user.jokesDownvoted;
 
       res.status(200).json({ username });
     });
@@ -25,7 +23,7 @@ export const login = (req, res, next) => {
 };
 
 export function getUserFromCookie(req, res) {
-  console.log("user in req", req.user);
+  console.log("user in req from cookie", req.user);
 
   try {
     const username = req.user.username;
@@ -50,7 +48,7 @@ export function signup(req, res, next) {
   console.log("inside signup");
   passport.authenticate("local", (err, user, info) => {
     if (err) throw err;
-    if (user) res.status(400).json("user already exists");
+    if (user) return res.status(400).json("user already exists");
 
     const newUser = new User();
     console.log("hash func");
@@ -66,7 +64,7 @@ export function signup(req, res, next) {
           .save()
           .then((user) => {
             req.logIn(user, function (error) {
-              if (error) res.status(400).json({ error });
+              if (error) return res.status(400).json({ error });
 
               const username = user.username;
               const jokesUpvoted = user.jokesUpvoted;
@@ -90,7 +88,7 @@ export function deleteSelf(req, res, next) {
     });
 
     User.findById(req.user._id).exec((err, user) => {
-      if (!user) res.status(400).json({ error: "no user" });
+      if (!user) return res.status(400).json({ error: "no user" });
       user.destroy();
       res.sendStatus(200);
     });
@@ -120,6 +118,10 @@ export async function getOwnProfileStats(req, res) {
     objToSend.accountCreationDate = req.user.createdAt;
     // username
     objToSend.username = req.user.username;
+    // users this user is following
+    objToSend.followingUsers = req.user.followingUsers;
+    // users who are following this user
+    objToSend.followedByUsers = req.user.followedByUsers;
 
     // send
     res.status(200).json(objToSend);

@@ -22,6 +22,10 @@ const userSchema = new Schema({
   jokesUpvoted: [{ type: mongoose.Schema.Types.ObjectId, ref: "DadJoke" }],
   jokesDownvoted: [{ type: mongoose.Schema.Types.ObjectId, ref: "DadJoke" }],
 
+  // following
+  followingUsers: [{ type: String, ref: "User" }],
+  followedByUsers: [{ type: String, ref: "User" }],
+
   // misc
   isAdmin: { type: Boolean, required: true, default: false },
   createdAt: { type: Date, default: Date.now },
