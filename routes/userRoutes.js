@@ -2,8 +2,6 @@ import express from "express";
 import {
   deleteSelf,
   getUserFromCookie,
-  getOtherUserProfileStats,
-  getOwnProfileStats,
   login,
   logout,
   signup,
@@ -12,6 +10,7 @@ import {
   followOtherUser,
   unfollowOtherUser,
 } from "../controllers/followingController.js";
+import { getProfileStats } from "../controllers/profileController.js";
 
 const auth = (req, res, next) => {
   if (req.isAuthenticated()) next();
@@ -45,9 +44,10 @@ router.get("/cookie", getUserFromCookie);
 // @access Private
 router.get("/logout", logout);
 
-// stats for own profile
-router.get("/profile", getOwnProfileStats);
-router.get("/profile/:username", getOtherUserProfileStats);
+// @route GET api/users/profile/:username
+// @desc Gets profile info for :username
+// @access Public
+router.get("/profile/:username", getProfileStats);
 
 router.post("/follow/:username", followOtherUser);
 router.post("/unfollow/:username", unfollowOtherUser);

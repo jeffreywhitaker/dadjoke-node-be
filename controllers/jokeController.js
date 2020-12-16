@@ -68,16 +68,8 @@ export function getPublicJokes(req, res) {
             joke.userVote = "0";
           }
 
-          console.log(
-            "val of req.user.followingUsers",
-            req.user.followingUsers
-          );
           // handle user follow
           // if the user is not following the joke creator
-          console.log(
-            "index is: ",
-            req.user.followingUsers.indexOf(joke.username)
-          );
           if (req.user.followingUsers.indexOf(joke.username) === -1) {
             joke.userFollowingCreator = false;
           } else {
