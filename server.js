@@ -33,9 +33,8 @@ var corsOptions = {
     }
   },
 };
+server.options("*", cors());
 server.use(cors(corsOptions));
-
-console.log("server running");
 
 server.use(helmet());
 // server.use(
