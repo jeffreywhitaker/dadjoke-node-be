@@ -30,7 +30,6 @@ var corsOptions = {
     }
   },
 };
-server.options("*", cors());
 server.use(cors(corsOptions));
 
 server.use(helmet());
