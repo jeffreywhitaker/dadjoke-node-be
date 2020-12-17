@@ -19,15 +19,21 @@ const MongoStore = connectMongo(session);
 const server = express();
 
 // basic middleware
-server.use(
-  cors({
-    credentials: true,
-    origin: [
-      "https://jeffsdadjokes.com/",
-      "https://jeffsdadjokes.com/publicjokes",
-    ],
-  })
-);
+var whitelist = [
+  "https://jeffsdadjokes.com/publicjokes",
+  "https://jeffsdadjokes.com/",
+];
+var corsOptions = {
+  credentials: true,
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+server.use(cors(corsOptions));
 
 console.log("server running");
 
