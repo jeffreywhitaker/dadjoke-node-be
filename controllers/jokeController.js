@@ -31,58 +31,62 @@ export function createJoke(req, res) {
 }
 
 export function getPublicJokes(req, res) {
-  // get response criteria from req
-  const responseCriteria = {
-    sortBy: req.body.sortBy || "newest",
-    resultsPerPage: req.body.resultsPerPage || "5",
-    page: req.body.page || 1,
-  };
+  try {
+    // get response criteria from req
+    const responseCriteria = {
+      sortBy: req.body.sortBy || "newest",
+      resultsPerPage: req.body.resultsPerPage || "5",
+      page: req.body.page || 1,
+    };
 
-  // set criteria
-  const criteria = {
-    isprivate: false,
-  };
+    // set criteria
+    const criteria = {
+      isprivate: false,
+    };
 
-  // access db and send
-  DadJoke.find(criteria)
-    .select("-creator -usersUpvoting -usersDownvoting")
-    .sort(responseCriteria.sortBy)
-    .limit(parseInt(responseCriteria.resultsPerPage) + 1)
-    .skip((responseCriteria.page - 1) * responseCriteria.resultsPerPage)
-    .lean()
-    .exec((err, jokes) => {
-      if (err) throw err;
-      // if a logged in user is making this request
-      if (req.user) {
-        const user = req.user;
+    // access db and send
+    DadJoke.find(criteria)
+      .select("-creator -usersUpvoting -usersDownvoting")
+      .sort(responseCriteria.sortBy)
+      .limit(parseInt(responseCriteria.resultsPerPage) + 1)
+      .skip((responseCriteria.page - 1) * responseCriteria.resultsPerPage)
+      .lean()
+      .exec((err, jokes) => {
+        if (err) throw err;
+        // if a logged in user is making this request
+        if (req.user) {
+          const user = req.user;
 
-        jokes.forEach((joke) => {
-          // handle user's vote
-          if (user.jokesUpvoted.indexOf(joke._id) !== -1) {
-            joke.userVote = "1";
-          } else if (user.jokesDownvoted.indexOf(joke._id) !== -1) {
-            joke.userVote = "-1";
-          } else {
-            joke.userVote = "0";
-          }
+          jokes.forEach((joke) => {
+            // handle user's vote
+            if (user.jokesUpvoted.indexOf(joke._id) !== -1) {
+              joke.userVote = "1";
+            } else if (user.jokesDownvoted.indexOf(joke._id) !== -1) {
+              joke.userVote = "-1";
+            } else {
+              joke.userVote = "0";
+            }
 
-          // handle user follow
-          // if the user is not following the joke creator
-          if (req.user.followingUsers.indexOf(joke.username) === -1) {
-            joke.userFollowingCreator = false;
-          } else {
-            joke.userFollowingCreator = true;
-          }
-        });
-      }
-      let responseObj = {
-        jokes: jokes ? jokes.slice(0, responseCriteria.resultsPerPage) : [],
-        page: responseCriteria.page,
-        resultsPerPage: responseCriteria.resultsPerPage,
-        hasNextPage: jokes.length > responseCriteria.resultsPerPage,
-      };
-      res.status(200).json(responseObj);
-    });
+            // handle user follow
+            // if the user is not following the joke creator
+            if (req.user.followingUsers.indexOf(joke.username) === -1) {
+              joke.userFollowingCreator = false;
+            } else {
+              joke.userFollowingCreator = true;
+            }
+          });
+        }
+        let responseObj = {
+          jokes: jokes ? jokes.slice(0, responseCriteria.resultsPerPage) : [],
+          page: responseCriteria.page,
+          resultsPerPage: responseCriteria.resultsPerPage,
+          hasNextPage: jokes.length > responseCriteria.resultsPerPage,
+        };
+        res.status(200).json(responseObj);
+      });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 }
 
 export function getPrivateJokes(req, res) {
