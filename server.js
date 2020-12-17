@@ -57,6 +57,7 @@ server.use(
     }),
     cookie: {
       sameSite: "none",
+      httpOnly: false,
       secure: true,
       maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
     },
