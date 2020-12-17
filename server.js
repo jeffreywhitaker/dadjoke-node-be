@@ -8,6 +8,7 @@ import session from "express-session";
 import mongoose from "mongoose";
 import connectMongo from "connect-mongo";
 import passportConfig from "./config/passportConfig.js";
+import routesMD from "./ROUTES.md";
 
 import jokeRoutes from "./routes/jokeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -21,13 +22,14 @@ const server = express();
 var whitelist = ["https://jeffsdadjokes.com"];
 var corsOptions = {
   credentials: true,
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error(`Not allowed by CORS, origin is: ${origin}`));
-    }
-  },
+  origin: true,
+  // origin: function (origin, callback) {
+  //   if (whitelist.indexOf(origin) !== -1) {
+  //     callback(null, true);
+  //   } else {
+  //     callback(new Error(`Not allowed by CORS, origin is: ${origin}`));
+  //   }
+  // },
 };
 server.use(cors(corsOptions));
 
@@ -72,6 +74,7 @@ server.use(passport.session());
 // routes
 server.use("/api/jokes/", jokeRoutes);
 server.use("/api/users/", userRoutes);
+server.get("/", express.static(routesMD));
 
 // export
 export default server;
