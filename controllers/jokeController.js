@@ -31,6 +31,7 @@ export function createJoke(req, res) {
 }
 
 export function getPublicJokes(req, res) {
+  console.log("inside getPublicJOkes");
   try {
     // get response criteria from req
     const responseCriteria = {
@@ -44,6 +45,7 @@ export function getPublicJokes(req, res) {
       isprivate: false,
     };
 
+    console.log("jokes 1");
     // access db and send
     DadJoke.find(criteria)
       .select("-creator -usersUpvoting -usersDownvoting")
@@ -82,6 +84,7 @@ export function getPublicJokes(req, res) {
           resultsPerPage: responseCriteria.resultsPerPage,
           hasNextPage: jokes.length > responseCriteria.resultsPerPage,
         };
+        console.log("jokes 2");
         res.status(200).json(responseObj);
       });
   } catch (error) {
