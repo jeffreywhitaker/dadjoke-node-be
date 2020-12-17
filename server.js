@@ -51,9 +51,6 @@ server.use(
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
       collection: "sessions",
-      autoRemove: "interval",
-      autoRemoveInterval: 10, // in minutes
-      touchAfter: 1 * 3600, // time in seconds -- one hour
     }),
     cookie: {
       sameSite: "none",
