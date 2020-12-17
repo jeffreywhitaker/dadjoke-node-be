@@ -22,6 +22,8 @@ const server = express();
 var whitelist = [
   "https://jeffsdadjokes.com/publicjokes",
   "https://jeffsdadjokes.com/",
+  "https://www.jeffsdadjokes.com/",
+  "https://www.jeffsdadjokes.com",
 ];
 var corsOptions = {
   credentials: true,
@@ -29,7 +31,7 @@ var corsOptions = {
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error(`Not allowed by CORS, origin is: ${origin}`));
     }
   },
 };
