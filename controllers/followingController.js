@@ -31,9 +31,6 @@ export async function followOtherUser(req, res) {
 }
 
 export async function unfollowOtherUser(req, res) {
-  console.log("req user", req.user.username);
-  console.log("params user", req.params.username);
-
   // can't unfollow yourself
   if (req.user.username === req.params.username) {
     return res.status(400).json({ error: "You can't unfollow yourself" });

@@ -20,8 +20,6 @@ export function createJoke(req, res) {
     username: req.user.username,
   });
 
-  console.log("new Joke: ", newJoke);
-
   newJoke
     .save()
     .then((joke) => {
@@ -168,17 +166,11 @@ export function deleteJoke(req, res) {
 
   // access db and send
   DadJoke.findById(req.params._id).exec((err, joke) => {
-    console.log("found joke to del", joke);
-    console.log("joke.creator", typeof joke.creator);
-    console.log("req.user.id", typeof req.user._id);
     if (parseInt(joke.creator) !== parseInt(req.user._id)) {
       return res.status(400).json({ error: "this is not your joke " });
     }
 
-    console.log("here");
     joke.remove((err) => {
-      console.log("there");
-      console.log("err", err);
       if (err) throw err;
       res.sendStatus(200);
     });
@@ -188,25 +180,19 @@ export function deleteJoke(req, res) {
 export function updateJokeVote(req, res) {
   // get the new vote from the user (1, 0, or -1)
   const user = req.user;
-  console.log("user", user);
   if (!user) {
     return res.status(401).json({ error: "Must be logged in to vote" });
   }
   const vote = req.body.voteNum;
-  console.log("req.data", req.data);
-  console.log("req.body", req.body);
   const jokeID = req.params._id;
-  console.log("jokeID", jokeID);
 
   let jokeToReturn;
 
   DadJoke.findById(jokeID)
     // .lean(false)
     .exec((err, joke) => {
-      console.log("joke.findbyid", joke);
       if (err) return res.status(400).json(err);
       // handle the vote
-      console.log("vote is", vote);
       if (vote === "1") {
         // upvote
         if (!joke.usersUpvoting.includes(user._id)) {
@@ -237,7 +223,6 @@ export function updateJokeVote(req, res) {
 
   // add joke ID to appropriate array on user (delete from other array, if necc)
   User.findById(user._id).exec((err, user) => {
-    console.log("user.findbyid: ", user);
     if (err) res.status(400).json(err);
     // handle the joke
     if (vote === "1") {

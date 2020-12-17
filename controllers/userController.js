@@ -4,7 +4,6 @@ import passport from "passport";
 import DadJoke from "../models/jokes.js";
 
 export const login = (req, res, next) => {
-  console.log("inside login func 1");
   passport.authenticate("local", function (err, user) {
     // if err
     if (err) throw err;
@@ -23,8 +22,6 @@ export const login = (req, res, next) => {
 };
 
 export function getUserFromCookie(req, res) {
-  console.log("user in req from cookie", req.user);
-
   try {
     const username = req.user.username;
     res.status(200).json({
@@ -45,13 +42,11 @@ export function logout(req, res) {
 }
 
 export function signup(req, res, next) {
-  console.log("inside signup");
   passport.authenticate("local", (err, user, info) => {
     if (err) throw err;
     if (user) return res.status(400).json("user already exists");
 
     const newUser = new User();
-    console.log("hash func");
     newUser.username = req.body.username;
     newUser.email = req.body.primaryemail;
     newUser.password = req.body.password;
