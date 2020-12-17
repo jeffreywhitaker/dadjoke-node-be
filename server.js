@@ -49,7 +49,7 @@ server.use(
   session({
     secret: process.env.SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
       collection: "sessions",
@@ -58,7 +58,7 @@ server.use(
       touchAfter: 1 * 3600, // time in seconds -- one hour
     }),
     cookie: {
-      sameSite: "none",
+      sameSite: false,
       secure: true,
       maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
     },
