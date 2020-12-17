@@ -46,8 +46,8 @@ server.use(bodyParser.json());
 server.use(
   session({
     secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
       collection: "sessions",
