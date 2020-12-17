@@ -22,8 +22,8 @@
     "passport-local": "^1.0.0"
   },
   "scripts": {
-    "start": "nodemon -r dotenv/config index.js",
-    "build": "node -r dotenv/config index.js"
+    "server": "nodemon -r dotenv/config index.js",
+    "start": "node -r dotenv/config index.js"
   },
   "type": "module",
   "devDependencies": {
