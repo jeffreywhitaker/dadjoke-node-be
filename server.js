@@ -19,12 +19,7 @@ const MongoStore = connectMongo(session);
 const server = express();
 
 // basic middleware
-var whitelist = [
-  "https://jeffsdadjokes.com/publicjokes",
-  "https://jeffsdadjokes.com/",
-  "https://www.jeffsdadjokes.com/",
-  "https://www.jeffsdadjokes.com",
-];
+var whitelist = ["https://jeffsdadjokes.com"];
 var corsOptions = {
   credentials: true,
   origin: function (origin, callback) {
