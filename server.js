@@ -22,7 +22,11 @@ const server = express();
 server.use(
   cors({
     credentials: true,
-    origin: ["https://dadjoke-geq4lvxdn.vercel.app/", "http://localhost:3000"],
+    origin: [
+      "https://jeffsdadjokes.com/",
+      "https://www.jeffsdadjokes.com/",
+      "http://localhost:3000",
+    ],
   })
 );
 
