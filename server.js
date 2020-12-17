@@ -58,6 +58,7 @@ server.use(
       touchAfter: 1 * 3600, // time in seconds -- one hour
     }),
     cookie: {
+      sameSite: "none",
       maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
     },
     rolling: true,
