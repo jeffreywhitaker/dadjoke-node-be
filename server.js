@@ -19,16 +19,16 @@ const MongoStore = connectMongo(session);
 const server = express();
 
 // basic middleware
-server.use(
-  cors({
-    credentials: true,
-    // origin: [
-    //   "https://jeffsdadjokes.com/",
-    //   "https://www.jeffsdadjokes.com/",
-    //   "http://localhost:3000",
-    // ],
-  })
-);
+// server.use(
+//   cors({
+//     credentials: true,
+//     // origin: [
+//     //   "https://jeffsdadjokes.com/",
+//     //   "https://www.jeffsdadjokes.com/",
+//     //   "http://localhost:3000",
+//     // ],
+//   })
+// );
 
 console.log("server running");
 
