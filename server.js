@@ -19,17 +19,28 @@ const MongoStore = connectMongo(session);
 const server = express();
 
 // basic middleware
+var whitelist = [
+  "https://jeffsdadjokes.com/",
+  "https://www.jeffsdadjokes.com/",
+  "http://localhost:3000",
+];
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
 server.options("*", cors());
-server.use(
-  cors({
-    credentials: true,
-    origin: [
-      "https://jeffsdadjokes.com/",
-      "https://www.jeffsdadjokes.com/",
-      "http://localhost:3000",
-    ],
-  })
-);
+// server.use(
+//   cors({
+//     credentials: true,
+//     origin: corsOptions,
+//   })
+// );
 
 console.log("server running");
 
@@ -73,8 +84,8 @@ server.use(passport.session());
 // rate limits?
 
 // routes
-server.use("/api/jokes/", jokeRoutes);
-server.use("/api/users/", userRoutes);
+server.use("/api/jokes/", cors(corsOptions), jokeRoutes);
+server.use("/api/users/", cors(corsOptions), userRoutes);
 
 // export
 export default server;
