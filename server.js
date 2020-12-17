@@ -21,24 +21,27 @@ const server = express();
 var whitelist = ["https://jeffsdadjokes.com"];
 var corsOptions = {
   credentials: true,
-  origin: true,
-  // origin: function (origin, callback) {
-  //   if (whitelist.indexOf(origin) !== -1) {
-  //     callback(null, true);
-  //   } else {
-  //     callback(new Error(`Not allowed by CORS, origin is: ${origin}`));
-  //   }
-  // },
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Not allowed by CORS, origin is: ${origin}`));
+    }
+  },
 };
 server.use(cors(corsOptions));
 
+// helmet and morgan
 server.use(helmet());
-// server.use(
-//   morgan(
-//     "[:date[iso]] :method :url :status :res[content-length] - :response-time ms"
-//   )
-// );
-server.use(morgan("dev"));
+if (process.env.NODE_ENV === "production") {
+  server.use(
+    morgan(
+      "[:date[iso]] :method :url :status :res[content-length] - :response-time ms"
+    )
+  );
+} else {
+  server.use(morgan("dev"));
+}
 
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
@@ -47,8 +50,8 @@ server.use(bodyParser.json());
 server.use(
   session({
     secret: process.env.SECRET,
-    // resave: true,
-    // saveUninitialized: true,
+    resave: true,
+    saveUninitialized: true,
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
       collection: "sessions",
