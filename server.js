@@ -30,6 +30,8 @@ server.use(
   })
 );
 
+console.log("server running");
+
 server.use(helmet());
 // server.use(
 //   morgan(
