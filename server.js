@@ -22,7 +22,10 @@ const server = express();
 server.use(
   cors({
     credentials: true,
-    origin: "https://jeffsdadjokes.com/",
+    origin: [
+      "https://jeffsdadjokes.com/",
+      "https://jeffsdadjokes.com/publicjokes",
+    ],
   })
 );
 
