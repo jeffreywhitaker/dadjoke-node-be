@@ -9,6 +9,7 @@ const User = mongoose.model("User");
 export default function passportConfig(passport) {
   // used to serialize the user for the session
   passport.serializeUser(function (user, done) {
+    console.log("serializing user: ", user);
     done(null, user.id);
   });
 

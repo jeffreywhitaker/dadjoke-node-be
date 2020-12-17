@@ -8,7 +8,6 @@ import session from "express-session";
 import mongoose from "mongoose";
 import connectMongo from "connect-mongo";
 import passportConfig from "./config/passportConfig.js";
-import cookieParser from "cookie-parser";
 
 import jokeRoutes from "./routes/jokeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -40,7 +39,6 @@ server.use(helmet());
 // );
 server.use(morgan("dev"));
 
-server.use(cookieParser()); // read cookies (needed for auth)
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
 
@@ -49,7 +47,7 @@ server.use(
   session({
     secret: process.env.SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
       collection: "sessions",
@@ -58,7 +56,7 @@ server.use(
       touchAfter: 1 * 3600, // time in seconds -- one hour
     }),
     cookie: {
-      sameSite: false,
+      sameSite: "none",
       secure: true,
       maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
     },

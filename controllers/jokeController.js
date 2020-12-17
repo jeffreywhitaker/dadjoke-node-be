@@ -101,7 +101,7 @@ export function getPrivateJokes(req, res) {
   };
 
   // not logged in?
-  if (!req.user._id) {
+  if (!req.user || !req.user._id) {
     return res
       .status(400)
       .json({ error: "You must be logged in to get your private jokes." });
