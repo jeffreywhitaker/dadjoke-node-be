@@ -19,7 +19,12 @@ const MongoStore = connectMongo(session);
 const server = express();
 
 // basic middleware
-server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+server.use(
+  cors({
+    credentials: true,
+    origin: ["https://dadjoke-geq4lvxdn.vercel.app/", "http://localhost:3000"],
+  })
+);
 
 server.use(helmet());
 // server.use(
