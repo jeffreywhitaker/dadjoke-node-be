@@ -81,17 +81,42 @@ export function signup(req, res, next) {
 
 export function deleteSelf(req, res, next) {
   try {
-    DadJoke.find({ creator: req.user._id }).exec((err, jokes) => {
+    const user = req.user;
+    const username = user.username;
+    if (!user) return res.status(400).json({ error: "No user from cookie" });
+
+    // remove the jokes
+    DadJoke.find({ creator: user._id }).exec((err, jokes) => {
       jokes.forEach((joke) => {
         joke.destroy();
       });
     });
 
-    User.findById(req.user._id).exec((err, user) => {
-      if (!user) return res.status(400).json({ error: "no user" });
-      user.destroy();
-      res.sendStatus(200);
+    // delete followed by references to this user in other users
+    user.followingUsers.forEach((username) => {
+      User.findOne({ username }).exec((error, otherUser) => {
+        if (error) return res.status(400).json({ error });
+
+        const index = otherUser.followedByUsers.indexOf(user.username);
+        otherUser.followedByUsers.splice(index, 1);
+        otherUser.save();
+      });
     });
+
+    // delete the following references
+    user.followedByUsers.forEach((username) => {
+      User.findOne({ username }).exec((error, otherUser) => {
+        if (error) return res.status(400).json({ error });
+
+        const index = otherUser.followingUsers.indexOf(user.username);
+        otherUser.followingUsers.splice(index, 1);
+        otherUser.save();
+      });
+    });
+
+    // destroy the user and send
+    user.destroy();
+    res.sendStatus(200);
   } catch (error) {
     res.status(400).json({ error });
   }
