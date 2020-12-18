@@ -23,7 +23,7 @@
   },
   "scripts": {
     "server": "nodemon -r dotenv/config index.js",
-    "start": "DEBUG=express-session node index.js"
+    "start": "node index.js"
   },
   "type": "module",
   "devDependencies": {

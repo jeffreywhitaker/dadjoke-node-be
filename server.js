@@ -18,7 +18,7 @@ const MongoStore = connectMongo(session);
 const server = express();
 
 // basic middleware
-var whitelist = ["https://jeffsdadjokes.com"];
+var whitelist = ["https://jeffsdadjokes.com", "http://localhost:3000"];
 var corsOptions = {
   credentials: true,
   origin: function (origin, callback) {
@@ -57,8 +57,8 @@ server.use(
       collection: "sessions",
     }),
     cookie: {
-      sameSite: "none",
-      secure: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : true,
+      secure: process.env.NODE_ENV === "production" ? true : false,
       maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
     },
     rolling: true,

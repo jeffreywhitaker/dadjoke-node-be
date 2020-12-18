@@ -2,32 +2,35 @@ import DadJoke from "../models/jokes.js";
 import User from "../models/user.js";
 
 export function createJoke(req, res) {
-  const body = req.body;
-  if (
-    !body ||
-    !body.dadjokeanswer ||
-    !body.dadjokequestion ||
-    !body.isprivate
-  ) {
-    return res.status(400).json({ error: "missing required field" });
-  }
+  try {
+    const body = req.body;
+    if (!body || !body.dadjokeanswer || !body.dadjokequestion) {
+      return res.status(400).json({ error: "missing required field" });
+    }
 
-  const newJoke = new DadJoke({
-    dadjokequestion: req.body.dadjokequestion,
-    dadjokeanswer: req.body.dadjokeanswer,
-    isprivate: req.body.isprivate,
-    creator: req.user._id,
-    username: req.user.username,
-  });
+    if (!req.user || !req.user._id) {
+      return res.status(400).json({ error: "unable to find user" });
+    }
 
-  newJoke
-    .save()
-    .then((joke) => {
-      res.status(200).json(joke);
-    })
-    .catch((error) => {
-      res.status(400).json({ error });
+    const newJoke = new DadJoke({
+      dadjokequestion: req.body.dadjokequestion,
+      dadjokeanswer: req.body.dadjokeanswer,
+      isprivate: req.body.isprivate || false,
+      creator: req.user._id,
+      username: req.user.username,
     });
+
+    newJoke
+      .save()
+      .then((joke) => {
+        res.status(200).json(joke);
+      })
+      .catch((error) => {
+        res.status(400).json({ error });
+      });
+  } catch (error) {
+    return res.status(400).json({ error });
+  }
 }
 
 export function getPublicJokes(req, res) {

@@ -15,6 +15,7 @@ export default function passportConfig(passport) {
 
   // used to deserialize the user
   passport.deserializeUser(function (id, done) {
+    console.log("deserializing: ", id);
     User.findById(id).exec(function (err, user) {
       console.log("deserialized and found user ", user);
       done(err, user);
