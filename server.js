@@ -62,6 +62,7 @@ server.use(
       maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
     },
     rolling: true,
+    proxy: true,
   })
 );
 
