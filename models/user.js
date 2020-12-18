@@ -17,6 +17,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  description: { type: String },
 
   // voting
   jokesUpvoted: [{ type: mongoose.Schema.Types.ObjectId, ref: "DadJoke" }],

@@ -10,7 +10,10 @@ import {
   followOtherUser,
   unfollowOtherUser,
 } from "../controllers/followingController.js";
-import { getProfileStats } from "../controllers/profileController.js";
+import {
+  getProfileStats,
+  updateUserDescription,
+} from "../controllers/profileController.js";
 
 const auth = (req, res, next) => {
   if (req.isAuthenticated()) next();
@@ -48,6 +51,11 @@ router.get("/logout", logout);
 // @desc Gets profile info for :username
 // @access Public
 router.get("/profile/:username", getProfileStats);
+
+// @route PUT api/users/profile/description
+// @desc Updates the user description
+// @access Private
+router.put("/profile/description", updateUserDescription);
 
 router.post("/follow/:username", followOtherUser);
 router.post("/unfollow/:username", unfollowOtherUser);

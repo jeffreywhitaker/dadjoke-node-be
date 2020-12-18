@@ -7,6 +7,7 @@ const jokeSchema = new Schema({
   dadjokequestion: String,
   dadjokeanswer: String,
   isprivate: { type: Boolean, required: true },
+  keywords: [{ type: String }],
 
   // votes
   karma: { type: Number, default: 0 },

@@ -16,6 +16,7 @@ export function createJoke(req, res) {
       dadjokequestion: req.body.dadjokequestion,
       dadjokeanswer: req.body.dadjokeanswer,
       isprivate: req.body.isprivate || false,
+      keywords: req.body.keywords || [],
       creator: req.user._id,
       username: req.user.username,
     });
@@ -48,7 +49,6 @@ export function getPublicJokes(req, res) {
       isprivate: false,
     };
 
-    console.log("jokes 1");
     // access db and send
     DadJoke.find(criteria)
       .select("-creator -usersUpvoting -usersDownvoting")
@@ -160,6 +160,7 @@ export function updateJoke(req, res) {
 
     joke.dadjokequestion = req.body.dadjokequestion;
     joke.dadjokeanswer = req.body.dadjokeanswer;
+    joke.keywords = req.body.keywords;
     joke.isprivate = req.body.isprivate;
 
     joke
