@@ -48,6 +48,10 @@ export function getPublicJokes(req, res) {
     const criteria = {
       isprivate: false,
     };
+    if (req.body.searchString) {
+      // TODO: should find
+      criteria.keywords = req.body.searchString;
+    }
 
     // access db and send
     DadJoke.find(criteria)
@@ -115,6 +119,10 @@ export function getPrivateJokes(req, res) {
     isprivate: true,
     creator: req.user._id,
   };
+  if (req.body.searchString) {
+    // TODO: should find
+    criteria.keywords = req.body.searchString;
+  }
 
   // access db and send
   DadJoke.find(criteria)
