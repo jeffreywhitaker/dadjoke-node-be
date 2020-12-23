@@ -1,5 +1,7 @@
 import User from "../models/user.js";
 import DadJoke from "../models/jokes.js";
+import path from "path";
+import fs from "fs";
 
 export async function getProfileStats(req, res) {
   try {
@@ -31,6 +33,8 @@ export async function getProfileStats(req, res) {
     objToSend.followedByUsers = user.followedByUsers;
     // user description
     objToSend.description = user.description;
+    // has avatar or not
+    objToSend.hasAvatar = user.image && user.image.data;
 
     // send
     res.status(200).json(objToSend);
@@ -56,5 +60,46 @@ export async function updateUserDescription(req, res) {
     res.sendStatus(200);
   } catch (error) {
     res.send(400).json({ error });
+  }
+}
+
+export async function uploadUserAvatar(req, res) {
+  try {
+    const userId = req.user._id;
+
+    if (req.files.image === undefined) {
+      return res.status(400).json({ error: "you must select a file" });
+    }
+
+    console.log("point 1");
+
+    User.findById(userId).exec((err, user) => {
+      console.log("point 2");
+      user.image.data = req.files.image.data;
+      console.log("point 3");
+
+      user.image.contentType = req.files.image.mimetype;
+      console.log("point 4");
+      user.save();
+      return res.status(200).json({ image: user.image.data });
+    });
+  } catch (error) {
+    return res.status(400).json({ error });
+  }
+}
+
+export function getUserAvatar(req, res) {
+  console.log("point 1");
+  try {
+    const username = req.params.username;
+    console.log("point 2");
+    User.findOne({ username }).exec((err, user) => {
+      console.log("point 3", user.username);
+      const imageToSend = user.image;
+      res.set("Content-Type", imageToSend.contentType);
+      res.status(200).json(imageToSend.data);
+    });
+  } catch (error) {
+    res.status(400).json({ error });
   }
 }

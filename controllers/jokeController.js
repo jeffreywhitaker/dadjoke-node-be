@@ -185,12 +185,13 @@ export function deleteJoke(req, res) {
 
   // access db and send
   DadJoke.findById(req.params._id).exec((err, joke) => {
+    if (err) return res.status(400).json({ error });
     if (parseInt(joke.creator) !== parseInt(req.user._id)) {
       return res.status(400).json({ error: "this is not your joke " });
     }
 
     joke.remove((err) => {
-      if (err) throw err;
+      if (err) return res.status(400).json({ error });
       res.sendStatus(200);
     });
   });

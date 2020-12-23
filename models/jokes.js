@@ -19,6 +19,7 @@ const jokeSchema = new Schema({
   ],
 
   // misc
+  commentCount: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
 });
 

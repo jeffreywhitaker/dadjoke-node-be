@@ -11,11 +11,16 @@ import passportConfig from "./config/passportConfig.js";
 
 import jokeRoutes from "./routes/jokeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import commentRoutes from "./routes/commentRoutes.js";
+import { getUserAvatar } from "./controllers/profileController.js";
 
 const MongoStore = connectMongo(session);
 
 // make server
 const server = express();
+
+// hack
+server.get("/api/users/profile/avatar/:username", getUserAvatar);
 
 // basic middleware
 var whitelist = ["https://jeffsdadjokes.com", "http://localhost:3000"];
@@ -43,8 +48,8 @@ if (process.env.NODE_ENV === "production") {
   server.use(morgan("dev"));
 }
 
-server.use(bodyParser.urlencoded({ extended: false }));
-server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+server.use(bodyParser.json({ limit: "50mb", extended: true }));
 
 // session middleware
 server.use(
@@ -76,6 +81,7 @@ server.use(passport.session());
 // routes
 server.use("/api/jokes/", jokeRoutes);
 server.use("/api/users/", userRoutes);
+server.use("/api/comments/", commentRoutes);
 
 // export
 export default server;

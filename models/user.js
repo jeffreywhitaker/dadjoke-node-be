@@ -18,6 +18,7 @@ const userSchema = new Schema({
     required: true,
   },
   description: { type: String },
+  image: { data: Buffer, contentType: String },
 
   // voting
   jokesUpvoted: [{ type: mongoose.Schema.Types.ObjectId, ref: "DadJoke" }],
@@ -28,6 +29,8 @@ const userSchema = new Schema({
   followedByUsers: [{ type: String, ref: "User" }],
 
   // misc
+  jokeCount: { type: Number, default: 0 },
+  commentCount: { type: Number, default: 0 },
   isAdmin: { type: Boolean, required: true, default: false },
   createdAt: { type: Date, default: Date.now },
 });

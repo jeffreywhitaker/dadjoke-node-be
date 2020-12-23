@@ -12,8 +12,11 @@ import {
 } from "../controllers/followingController.js";
 import {
   getProfileStats,
+  getUserAvatar,
   updateUserDescription,
+  uploadUserAvatar,
 } from "../controllers/profileController.js";
+import fileUpload from "express-fileupload";
 
 const auth = (req, res, next) => {
   if (req.isAuthenticated()) next();
@@ -32,7 +35,7 @@ router.post("/login", login);
 // @access Public
 router.post("/createnewuser", signup);
 
-// @route POST api/users/signup
+// @route POST api/users/deleteself
 // @desc Deletes the user, as well as their jokes
 // @access Private
 router.post("/deleteself", auth, deleteSelf);
@@ -59,6 +62,14 @@ router.put("/profile/description", updateUserDescription);
 
 router.post("/follow/:username", followOtherUser);
 router.post("/unfollow/:username", unfollowOtherUser);
+
+const log = (req, res, next) => {
+  console.log("got to here");
+  console.log(req.body);
+  next();
+};
+
+router.post("/profile/avatar", log, fileUpload(), uploadUserAvatar);
 
 // export
 export default router;
