@@ -69,7 +69,7 @@ const log = (req, res, next) => {
   next();
 };
 
-router.post("/profile/avatar", log, fileUpload(), uploadUserAvatar);
+// router.post("/profile/avatar", log, fileUpload(), uploadUserAvatar);
 
 // export
 export default router;

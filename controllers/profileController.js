@@ -89,11 +89,12 @@ export async function uploadUserAvatar(req, res) {
 }
 
 export function getUserAvatar(req, res) {
-  console.log("point 1");
+  console.log("point 1, username", req.params.username);
   try {
     const username = req.params.username;
     console.log("point 2");
-    User.findOne({ username }).exec((err, user) => {
+    User.findOne({ username }).exec((error, user) => {
+      if (error) return res.status(400).json({ error });
       console.log("point 3", user.username);
       const imageToSend = user.image;
       res.set("Content-Type", imageToSend.contentType);

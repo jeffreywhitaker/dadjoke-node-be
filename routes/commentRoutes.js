@@ -8,9 +8,9 @@ const router = express.Router();
 // @access Private
 router.post("/add", addComment);
 
-// @route GET api/comments/:jokeID
-// @desc Get comments associated with joke
+// @route POST api/comments/:jokeID
+// @desc Get comments associated with joke, using criteria in body
 // @access Public
-router.get("/:jokeID", getComments);
+router.post("/:jokeID", getComments);
 
 export default router;

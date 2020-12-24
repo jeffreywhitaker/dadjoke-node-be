@@ -57,10 +57,32 @@ export function getComments(req, res) {
     return res.status(400).json({ error: "joke id required" });
   }
 
-  Comment.find({ joke: req.params.jokeID }).exec((err, commentArr) => {
-    // sort comments by creation date
-    commentArr.sort((a, b) => a.createdAt - b.createdAt);
+  const responseCriteria = {
+    sortBy: req.body.sortBy || "-createdAt",
+    resultsPerPage: req.body.resultsPerPage || "5",
+    page: req.body.page || 1,
+  };
 
-    return res.status(200).json(commentArr);
-  });
+  Comment.find({ joke: req.params.jokeID })
+    .sort(responseCriteria.sortBy)
+    .limit(parseInt(responseCriteria.resultsPerPage) + 1)
+    .skip((responseCriteria.page - 1) * responseCriteria.resultsPerPage)
+    .lean()
+    .exec((err, commentArr) => {
+      // sort comments by creation date
+      commentArr.sort((a, b) => a.createdAt - b.createdAt);
+
+      // remove extra and determine if next
+      const responseObj = {
+        comments: commentArr
+          ? commentArr.slice(0, responseCriteria.resultsPerPage)
+          : [],
+        page: responseCriteria.page,
+        resultsPerPage: responseCriteria.resultsPerPage,
+        hasNextPage: commentArr.length > responseCriteria.resultsPerPage,
+      };
+
+      // return the response
+      return res.status(200).json(responseObj);
+    });
 }
