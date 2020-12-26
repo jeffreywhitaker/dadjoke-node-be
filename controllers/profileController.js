@@ -103,7 +103,6 @@ export function getUserAvatar(req, res) {
       res.contentType("json");
       // TODO: put behind cors and fix this
       res.set("Access-Control-Allow-Credentials", true);
-      res.set("Access-Control-Allow-Origin", "http://localhost:3000");
       res.send(imageToSend);
     });
   } catch (error) {

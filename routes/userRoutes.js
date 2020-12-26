@@ -70,6 +70,8 @@ const log = (req, res, next) => {
 };
 
 router.post("/profile/avatar", log, fileUpload(), uploadUserAvatar);
+// hack
+router.get("/profile/avatar/:username", getUserAvatar);
 
 // export
 export default router;

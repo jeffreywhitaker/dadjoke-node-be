@@ -19,9 +19,6 @@ const MongoStore = connectMongo(session);
 // make server
 const server = express();
 
-// hack
-server.get("/api/users/profile/avatar/:username", getUserAvatar);
-
 // basic middleware
 var whitelist = ["https://jeffsdadjokes.com", "http://localhost:3000"];
 var corsOptions = {
