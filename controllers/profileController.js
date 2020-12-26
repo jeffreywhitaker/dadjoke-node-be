@@ -97,8 +97,14 @@ export function getUserAvatar(req, res) {
       if (error) return res.status(400).json({ error });
       console.log("point 3", user.username);
       const imageToSend = user.image;
-      res.set("Content-Type", imageToSend.contentType);
-      res.status(200).json(imageToSend.data);
+      console.log("image to send type", typeof imageToSend);
+      console.log("iamge to send is: ", imageToSend);
+      // res.set("Content-Type", imageToSend.contentType);
+      res.contentType("json");
+      // TODO: put behind cors and fix this
+      res.set("Access-Control-Allow-Credentials", true);
+      res.set("Access-Control-Allow-Origin", "http://localhost:3000");
+      res.send(imageToSend);
     });
   } catch (error) {
     res.status(400).json({ error });
