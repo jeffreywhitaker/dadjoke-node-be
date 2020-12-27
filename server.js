@@ -12,7 +12,6 @@ import passportConfig from "./config/passportConfig.js";
 import jokeRoutes from "./routes/jokeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
-import { getUserAvatar } from "./controllers/profileController.js";
 
 const MongoStore = connectMongo(session);
 
@@ -31,7 +30,10 @@ var corsOptions = {
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error(`Not allowed by CORS, origin is: ${origin}`));
+      // callback(new Error(`Not allowed by CORS, origin is: ${origin}`));
+      res
+        .status(400)
+        .json({ error: `Origin ${origin} is not allowed by CORS policy` });
     }
   },
 };
