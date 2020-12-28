@@ -182,6 +182,9 @@ export function updateJoke(req, res) {
 
 export function deleteJoke(req, res) {
   // parse url?
+  if (!req.params._id) {
+    return res.status(400).json({ error: "Must have id" });
+  }
 
   // access db and send
   DadJoke.findById(req.params._id).exec((err, joke) => {
