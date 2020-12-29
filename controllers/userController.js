@@ -6,10 +6,10 @@ import DadJoke from "../models/jokes.js";
 export const login = (req, res, next) => {
   passport.authenticate("local", function (err, user) {
     // if err
-    if (err) throw err;
+    if (err) return res.status(400).json({ error: err });
 
     // if no user
-    if (!user) throw err;
+    if (!user) return res.status(400).json({ error: "no user found" });
 
     req.logIn(user, function (err) {
       if (err) console.log("login err", err);
@@ -43,7 +43,7 @@ export function logout(req, res) {
 
 export function signup(req, res, next) {
   passport.authenticate("local", (err, user, info) => {
-    if (err) throw err;
+    if (err) return res.status(400).json({ error: err });
     if (user) return res.status(400).json("user already exists");
 
     const newUser = new User();
