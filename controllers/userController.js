@@ -12,7 +12,10 @@ export const login = (req, res, next) => {
     if (!user) return res.status(400).json({ error: "no user found" });
 
     req.logIn(user, function (err) {
-      if (err) console.log("login err", err);
+      if (err) {
+        console.log("login err", err);
+        return res.status(500).json({ error: err });
+      }
 
       const username = user.username;
 
