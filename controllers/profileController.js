@@ -1,7 +1,5 @@
 import User from "../models/user.js";
 import DadJoke from "../models/jokes.js";
-import path from "path";
-import fs from "fs";
 
 export async function getProfileStats(req, res) {
   try {

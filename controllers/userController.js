@@ -56,7 +56,10 @@ export function signup(req, res, next) {
 
     bcrypt.genSalt(12, (err, salt) => {
       bcrypt.hash(newUser.password, salt, (err, hash) => {
-        if (err) throw err;
+        if (err) {
+          return res.status(400).json({ error: "Problem signing up new user" });
+        }
+
         newUser.password = hash;
         newUser
           .save()
@@ -71,13 +74,15 @@ export function signup(req, res, next) {
               res.status(200).json({ username, jokesUpvoted, jokesDownvoted });
             });
           })
-          .catch((err) => console.log(err));
+          .catch((err) => {
+            return res.status(400).json({ error: err });
+          });
       });
     });
   })(req, res, next);
 }
 
-export function deleteSelf(req, res, next) {
+export function deleteSelf(req, res) {
   try {
     const user = req.user;
     const username = user.username;
