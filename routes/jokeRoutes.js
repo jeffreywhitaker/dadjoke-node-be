@@ -3,8 +3,7 @@ import express from "express";
 import {
   createJoke,
   deleteJoke,
-  getPrivateJokes,
-  getPublicJokes,
+  getJokes,
   updateJoke,
   updateJokeVote,
 } from "../controllers/jokeController.js";
@@ -14,7 +13,7 @@ const router = express.Router();
 // @route POST api/jokes/public
 // @desc Get list of public dadjokes
 // @access Public
-router.post("/public", getPublicJokes);
+router.post("/public", getJokes);
 
 // @route POST api/jokes/create
 // @desc Create a dadjoke associated with the user
@@ -24,7 +23,7 @@ router.post("/add", createJoke);
 // @route POST api/jokes/private
 // @desc Return array of user's private dadjokes
 // @access Private
-router.post("/private", getPrivateJokes);
+router.post("/private", getJokes);
 
 // @route PUT api/jokes/:id
 // @desc Finds joke via ID and updates it

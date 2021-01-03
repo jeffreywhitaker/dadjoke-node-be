@@ -34,9 +34,11 @@ export function createJoke(req, res) {
   }
 }
 
-export function getPublicJokes(req, res) {
-  console.log("inside getPublicJOkes");
+export function getJokes(req, res) {
+  console.log("inside getJokes");
   try {
+    const publicOrPrivate = req.body.publicOrPrivate;
+
     // get response criteria from req
     const responseCriteria = {
       sortBy: req.body.sortBy || "newest",
@@ -46,8 +48,22 @@ export function getPublicJokes(req, res) {
 
     // set criteria
     const criteria = {
-      isprivate: false,
+      isprivate: publicOrPrivate === "private" ? true : false,
     };
+
+    // not logged in?
+    if ((criteria.isprivate && !req.user) || !req.user._id) {
+      return res
+        .status(400)
+        .json({ error: "You must be logged in to get your private jokes." });
+    }
+
+    // if private jokes, only get jokes by user id
+    if (publicOrPrivate === "private") {
+      criteria.creator = req.user._id;
+    }
+
+    // if a search string, use that to find search
     if (req.body.searchString) {
       // TODO: should find
       criteria.keywords = req.body.searchString;
@@ -78,10 +94,13 @@ export function getPublicJokes(req, res) {
 
             // handle user follow
             // if the user is not following the joke creator
-            if (req.user.followingUsers.indexOf(joke.username) === -1) {
-              joke.userFollowingCreator = false;
-            } else {
-              joke.userFollowingCreator = true;
+            // TODO: make this better
+            if (publicOrPrivate === "public") {
+              if (req.user.followingUsers.indexOf(joke.username) === -1) {
+                joke.userFollowingCreator = false;
+              } else {
+                joke.userFollowingCreator = true;
+              }
             }
           });
         }
@@ -97,63 +116,6 @@ export function getPublicJokes(req, res) {
   } catch (error) {
     res.status(500).json({ error });
   }
-}
-
-export function getPrivateJokes(req, res) {
-  // get response criteria from req
-  const responseCriteria = {
-    sortBy: req.body.sortBy || "newest",
-    resultsPerPage: req.body.resultsPerPage || "5",
-    page: req.body.page || 1,
-  };
-
-  // not logged in?
-  if (!req.user || !req.user._id) {
-    return res
-      .status(400)
-      .json({ error: "You must be logged in to get your private jokes." });
-  }
-
-  // set criteria
-  const criteria = {
-    isprivate: true,
-    creator: req.user._id,
-  };
-  if (req.body.searchString) {
-    // TODO: should find
-    criteria.keywords = req.body.searchString;
-  }
-
-  // access db and send
-  DadJoke.find(criteria)
-    .select("-creator -usersUpvoting -usersDownvoting")
-    .sort(responseCriteria.sortBy)
-    .limit(parseInt(responseCriteria.resultsPerPage) + 1)
-    .skip((responseCriteria.page - 1) * responseCriteria.resultsPerPage)
-    .lean()
-    .exec((err, jokes) => {
-      if (err) throw err;
-      if (req.user) {
-        const user = req.user;
-
-        jokes.forEach((joke) => {
-          if (user.jokesUpvoted.indexOf(joke._id) !== -1) {
-            joke.userVote = "1";
-          } else if (user.jokesDownvoted.indexOf(joke._id) !== -1) {
-            joke.userVote = "-1";
-          } else {
-            joke.userVote = "0";
-          }
-        });
-      }
-      let responseObj = {
-        jokes: jokes ? jokes.slice(0, responseCriteria.resultsPerPage) : [],
-        page: responseCriteria.page,
-        resultsPerPage: responseCriteria.resultsPerPage,
-        hasNextPage: jokes.length > responseCriteria.resultsPerPage,
-      };
-      res.status(200).json(responseObj);
-    });
 }
 
 export function updateJoke(req, res) {
