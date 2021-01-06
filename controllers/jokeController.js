@@ -37,18 +37,19 @@ export function createJoke(req, res) {
 export function getJokes(req, res) {
   console.log("inside getJokes");
   try {
-    const publicOrPrivate = req.body.publicOrPrivate;
+    // get the query params
+    const isprivate = req.query.isprivate;
 
-    // get response criteria from req
+    // get response criteria from query
     const responseCriteria = {
-      sortBy: req.body.sortBy || "newest",
-      resultsPerPage: req.body.resultsPerPage || "5",
-      page: req.body.page || 1,
+      sortBy: req.query.sortBy || "newest",
+      resultsPerPage: req.query.resultsPerPage || "5",
+      page: req.query.page || 1,
     };
 
     // set criteria
     const criteria = {
-      isprivate: publicOrPrivate === "private" ? true : false,
+      isprivate,
     };
 
     // not logged in?
@@ -59,14 +60,14 @@ export function getJokes(req, res) {
     }
 
     // if private jokes, only get jokes by user id
-    if (publicOrPrivate === "private") {
+    if (isprivate) {
       criteria.creator = req.user._id;
     }
 
     // if a search string, use that to find search
-    if (req.body.searchString) {
+    if (req.query.searchString) {
       // TODO: should find
-      criteria.keywords = req.body.searchString;
+      criteria.keywords = req.query.searchString;
     }
 
     // access db and send
@@ -95,7 +96,7 @@ export function getJokes(req, res) {
             // handle user follow
             // if the user is not following the joke creator
             // TODO: make this better
-            if (publicOrPrivate === "public") {
+            if (!isprivate) {
               if (req.user.followingUsers.indexOf(joke.username) === -1) {
                 joke.userFollowingCreator = false;
               } else {
