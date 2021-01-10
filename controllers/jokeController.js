@@ -38,13 +38,13 @@ export function getJokes(req, res) {
   console.log("inside getJokes");
   try {
     // get the query params
-    const isprivate = req.query.isprivate;
+    const isprivate = req.query.isprivate === "true";
 
     // get response criteria from query
     const responseCriteria = {
       sortBy: req.query.sortBy || "newest",
-      resultsPerPage: req.query.resultsPerPage || "5",
-      page: req.query.page || 1,
+      resultsPerPage: parseInt(req.query.resultsPerPage) || 5,
+      page: parseInt(req.query.page) || 1,
     };
 
     // set criteria
@@ -53,7 +53,10 @@ export function getJokes(req, res) {
     };
 
     // not logged in?
-    if ((criteria.isprivate && !req.user) || !req.user._id) {
+    if (
+      (criteria.isprivate && !req.user) ||
+      (criteria.isprivate && !req.user._id)
+    ) {
       return res
         .status(400)
         .json({ error: "You must be logged in to get your private jokes." });
@@ -65,10 +68,13 @@ export function getJokes(req, res) {
     }
 
     // if a search string, use that to find search
-    if (req.query.searchString) {
+    if (req.query.searchString !== "") {
       // TODO: should find
       criteria.keywords = req.query.searchString;
     }
+
+    console.log("responseCriteria", responseCriteria);
+    console.log("criteria", criteria);
 
     // access db and send
     DadJoke.find(criteria)

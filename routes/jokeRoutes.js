@@ -10,20 +10,15 @@ import {
 
 const router = express.Router();
 
-// @route POST api/jokes/public
-// @desc Get list of public dadjokes
-// @access Public
-router.post("/public", getJokes);
+// @route GET api/jokes/
+// @desc Get list of public or private dadjokes
+// @access Public or Private
+router.get("/", getJokes);
 
 // @route POST api/jokes/create
 // @desc Create a dadjoke associated with the user
 // @access Private
 router.post("/add", createJoke);
-
-// @route POST api/jokes/private
-// @desc Return array of user's private dadjokes
-// @access Private
-router.post("/private", getJokes);
 
 // @route PUT api/jokes/:id
 // @desc Finds joke via ID and updates it
