@@ -35,7 +35,6 @@ export function createJoke(req, res) {
 }
 
 export function getJokes(req, res) {
-  console.log("inside getJokes");
   try {
     // get the query params
     const isprivate = req.query.isprivate === "true";
@@ -69,12 +68,9 @@ export function getJokes(req, res) {
 
     // if a search string, use that to find search
     if (req.query.searchString !== "") {
-      // TODO: should find
+      // TODO: should find multiple words
       criteria.keywords = req.query.searchString;
     }
-
-    console.log("responseCriteria", responseCriteria);
-    console.log("criteria", criteria);
 
     // access db and send
     DadJoke.find(criteria)
@@ -117,7 +113,7 @@ export function getJokes(req, res) {
           resultsPerPage: responseCriteria.resultsPerPage,
           hasNextPage: jokes.length > responseCriteria.resultsPerPage,
         };
-        console.log("jokes 2");
+
         res.status(200).json(responseObj);
       });
   } catch (error) {
