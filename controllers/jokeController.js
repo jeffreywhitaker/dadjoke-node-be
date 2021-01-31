@@ -52,10 +52,8 @@ export function getJokes(req, res) {
     };
 
     // not logged in?
-    if (
-      (criteria.isprivate && !req.user) ||
-      (criteria.isprivate && !req.user._id)
-    ) {
+    // TODO: make sure this works
+    if (criteria.isprivate && !req.user?._id) {
       return res
         .status(400)
         .json({ error: "You must be logged in to get your private jokes." });
@@ -81,6 +79,18 @@ export function getJokes(req, res) {
       .lean()
       .exec((err, jokes) => {
         if (err) throw err;
+
+        // if not private, attach the joke creator's avatar
+        // TODO: handle this better
+        if (!isprivate) {
+          jokes.forEach((joke) => {
+            User.find({ username: joke.username }).exec((error, user) => {
+              if (error) return res.status(400).json({ error });
+              joke.creatorAvatar = user.image;
+            });
+          });
+        }
+
         // if a logged in user is making this request
         if (req.user) {
           const user = req.user;
@@ -108,9 +118,11 @@ export function getJokes(req, res) {
           });
         }
         let responseObj = {
+          // if there are more jokes, only take what's requested
           jokes: jokes ? jokes.slice(0, responseCriteria.resultsPerPage) : [],
           page: responseCriteria.page,
           resultsPerPage: responseCriteria.resultsPerPage,
+          // determine if there are more jokes
           hasNextPage: jokes.length > responseCriteria.resultsPerPage,
         };
 
