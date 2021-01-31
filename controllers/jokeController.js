@@ -72,24 +72,14 @@ export function getJokes(req, res) {
 
     // access db and send
     DadJoke.find(criteria)
-      .select("-creator -usersUpvoting -usersDownvoting")
+      .select("-usersUpvoting -usersDownvoting")
+      .populate("creator", "image")
       .sort(responseCriteria.sortBy)
       .limit(parseInt(responseCriteria.resultsPerPage) + 1)
       .skip((responseCriteria.page - 1) * responseCriteria.resultsPerPage)
       .lean()
       .exec((err, jokes) => {
         if (err) throw err;
-
-        // if not private, attach the joke creator's avatar
-        // TODO: handle this better
-        if (!isprivate) {
-          jokes.forEach((joke) => {
-            User.find({ username: joke.username }).exec((error, user) => {
-              if (error) return res.status(400).json({ error });
-              joke.creatorAvatar = user.image;
-            });
-          });
-        }
 
         // if a logged in user is making this request
         if (req.user) {
@@ -117,6 +107,8 @@ export function getJokes(req, res) {
             }
           });
         }
+
+        // create the response object
         let responseObj = {
           // if there are more jokes, only take what's requested
           jokes: jokes ? jokes.slice(0, responseCriteria.resultsPerPage) : [],
@@ -126,6 +118,7 @@ export function getJokes(req, res) {
           hasNextPage: jokes.length > responseCriteria.resultsPerPage,
         };
 
+        // send
         res.status(200).json(responseObj);
       });
   } catch (error) {
