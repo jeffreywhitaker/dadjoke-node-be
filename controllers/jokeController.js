@@ -72,8 +72,7 @@ export function getJokes(req, res) {
 
     // access db and send
     DadJoke.find(criteria)
-      .select("-usersUpvoting -usersDownvoting")
-      .populate("creator", "image")
+      .select("-creator -usersUpvoting -usersDownvoting")
       .sort(responseCriteria.sortBy)
       .limit(parseInt(responseCriteria.resultsPerPage) + 1)
       .skip((responseCriteria.page - 1) * responseCriteria.resultsPerPage)
