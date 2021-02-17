@@ -87,21 +87,32 @@ export async function uploadUserAvatar(req, res) {
 }
 
 export function getUserAvatar(req, res) {
-  console.log("point 1, username", req.params.username);
   try {
     const username = req.params.username;
-    console.log("point 2");
     User.findOne({ username }).exec((error, user) => {
       if (error) return res.status(400).json({ error });
-      console.log("point 3", user.username);
       const imageToSend = user.image;
-      console.log("image to send type", typeof imageToSend);
-      console.log("iamge to send is: ", imageToSend);
+
       // res.set("Content-Type", imageToSend.contentType);
       res.contentType("json");
       // TODO: put behind cors and fix this
       res.set("Access-Control-Allow-Credentials", true);
       res.send(imageToSend);
+    });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+}
+
+export function deleteUserAvatar(req, res) {
+  try {
+    const userId = req.user._id;
+    User.findById(userId).exec((error, user) => {
+      // delete the user image
+      user.image = null;
+      user.save();
+
+      res.sendStatus(200);
     });
   } catch (error) {
     res.status(400).json({ error });

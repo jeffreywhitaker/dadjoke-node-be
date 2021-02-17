@@ -11,6 +11,7 @@ import {
   unfollowOtherUser,
 } from "../controllers/followingController.js";
 import {
+  deleteUserAvatar,
   getProfileStats,
   getUserAvatar,
   updateUserDescription,
@@ -72,6 +73,8 @@ const log = (req, res, next) => {
 router.post("/profile/avatar", log, fileUpload(), uploadUserAvatar);
 // hack
 router.get("/profile/avatar/:username", getUserAvatar);
+
+router.delete("/profile/avatar", deleteUserAvatar);
 
 // export
 export default router;

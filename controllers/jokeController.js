@@ -70,6 +70,11 @@ export function getJokes(req, res) {
       criteria.keywords = req.query.searchString;
     }
 
+    // if searching for only one submitted user, use that
+    if (req.query.submittedBy !== "") {
+      criteria.username = req.query.submittedBy;
+    }
+
     // access db and send
     DadJoke.find(criteria)
       .select("-creator -usersUpvoting -usersDownvoting")
