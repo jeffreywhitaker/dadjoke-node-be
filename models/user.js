@@ -20,6 +20,10 @@ const userSchema = new Schema({
   description: { type: String },
   image: { data: Buffer, contentType: String },
 
+  // mb
+  mbThreads: [{ type: mongoose.Schema.Types.ObjectId, ref: "Thread" }],
+  mbComments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+
   // voting
   jokesUpvoted: [{ type: mongoose.Schema.Types.ObjectId, ref: "DadJoke" }],
   jokesDownvoted: [{ type: mongoose.Schema.Types.ObjectId, ref: "DadJoke" }],

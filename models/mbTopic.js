@@ -4,6 +4,7 @@ import mbResponse from "./mbResponse";
 const Schema = mongoose.Schema;
 
 const mbTopicSchema = new Schema({
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   creatorName: { type: String, ref: "User" },
   text: { type: String, default: "" },
   textHistory: { type: [mbText], default: [] },
