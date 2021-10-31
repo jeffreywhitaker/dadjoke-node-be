@@ -23,6 +23,8 @@ const userSchema = new Schema({
   // mb
   mbThreads: [{ type: mongoose.Schema.Types.ObjectId, ref: "Thread" }],
   mbComments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+  mbThreadCount: { type: Number, default: 0 },
+  mbCommentCount: { type: Number, default: 0 },
 
   // voting
   jokesUpvoted: [{ type: mongoose.Schema.Types.ObjectId, ref: "DadJoke" }],

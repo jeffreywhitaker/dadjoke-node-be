@@ -1,4 +1,4 @@
-import MbTopic from "../models/mbTopic.js";
+import MbThread from "../models/mbThread.js";
 import User from "../models/user.js";
 
 export function createTopic(req, res) {
@@ -13,7 +13,7 @@ export function createTopic(req, res) {
       return res.status(400).json({ error: "unable to find user" });
     }
 
-    const newTopic = new MbTopic({
+    const newTopic = new MbThread({
       creator: req.user._id,
       creatorName: req.user.username,
       text: body.text,
@@ -24,6 +24,11 @@ export function createTopic(req, res) {
       .save()
       .then((topic) => res.status(200).json(topic))
       .catch((error) => res.status(400).json({ error }));
+
+    User.findById(req.user._id).exec((user) => {
+      user.mbThreadCount++;
+      user.save();
+    });
   } catch (error) {
     return res.status(400).json({ error });
   }
