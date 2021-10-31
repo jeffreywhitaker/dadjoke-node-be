@@ -1,7 +1,7 @@
-import MbThread from "../models/mbThread.js";
+import MbComment from "../models/mbComment.js";
 import User from "../models/user.js";
 
-export function createThread(req, res) {
+export function createComment(req, res) {
   // body is an obj with text
   try {
     const body = req.body;
@@ -13,20 +13,21 @@ export function createThread(req, res) {
       return res.status(400).json({ error: "unable to find user" });
     }
 
-    const newTopic = new MbThread({
+    const newComment = new MbComment({
       creator: req.user._id,
       creatorName: req.user.username,
       text: body.text,
+      threadId: body.threadId,
       textHistory: [{ text: body.text }],
     });
 
-    newTopic
+    newComment
       .save()
-      .then((topic) => res.status(200).json(topic))
+      .then((comment) => res.status(200).json(comment))
       .catch((error) => res.status(400).json({ error }));
 
     User.findById(req.user._id).exec((user) => {
-      user.mbThreadCount++;
+      user.mbCommentCount++;
       user.save();
     });
   } catch (error) {

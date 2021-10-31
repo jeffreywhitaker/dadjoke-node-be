@@ -8,8 +8,8 @@ const mbThreadSchema = new Schema({
   creatorName: { type: String, ref: "User" },
   text: { type: String, default: "" },
   textHistory: { type: [mbText], default: [] },
-  responses: { type: [mbResponse], default: [] },
+  responses: { type: [mbComment], default: [] },
   createdAt: { type: Date, default: Date.now },
 });
 
-export default mongoose.model("MbTopic", mbThreadSchema);
+export default mongoose.model("MbThread", mbThreadSchema);
