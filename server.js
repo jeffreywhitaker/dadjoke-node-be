@@ -12,6 +12,8 @@ import passportConfig from "./config/passportConfig.js";
 import jokeRoutes from "./routes/jokeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
+import mbThreadRoutes from "./routes/mbThreadRoutes.js";
+import mbCommentRoutes from "./routes/mbCommentRoutes.js";
 
 const MongoStore = connectMongo(session);
 
@@ -85,6 +87,8 @@ server.use(passport.session());
 server.use("/api/jokes/", jokeRoutes);
 server.use("/api/users/", userRoutes);
 server.use("/api/comments/", commentRoutes);
+server.use("/api/mbthread/", mbThreadRoutes);
+server.use("/api/mbcomment/", mbCommentRoutes);
 
 // export
 export default server;
