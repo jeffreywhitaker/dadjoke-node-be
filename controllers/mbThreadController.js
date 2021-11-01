@@ -5,7 +5,7 @@ export function createThread(req, res) {
   // body is an obj with text
   try {
     const body = req.body;
-    if (!body || !body.text) {
+    if (!body || !body.text || !body.title) {
       return res.status(400).json({ error: "missing required field" });
     }
 
@@ -17,7 +17,9 @@ export function createThread(req, res) {
       creator: req.user._id,
       creatorName: req.user.username,
       text: body.text,
+      title: body.title,
       textHistory: [{ text: body.text }],
+      titleHistory: [{ title: body.title }],
     });
 
     newThread
