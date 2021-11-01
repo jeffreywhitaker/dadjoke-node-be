@@ -21,8 +21,6 @@ const userSchema = new Schema({
   image: { data: Buffer, contentType: String },
 
   // mb
-  mbThreads: [{ type: mongoose.Schema.Types.ObjectId, ref: "Thread" }],
-  mbComments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   mbThreadCount: { type: Number, default: 0 },
   mbCommentCount: { type: Number, default: 0 },
 

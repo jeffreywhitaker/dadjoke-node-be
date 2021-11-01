@@ -13,16 +13,16 @@ export function createThread(req, res) {
       return res.status(400).json({ error: "unable to find user" });
     }
 
-    const newTopic = new MbThread({
+    const newThread = new MbThread({
       creator: req.user._id,
       creatorName: req.user.username,
       text: body.text,
       textHistory: [{ text: body.text }],
     });
 
-    newTopic
+    newThread
       .save()
-      .then((topic) => res.status(200).json(topic))
+      .then((thread) => res.status(200).json(thread))
       .catch((error) => res.status(400).json({ error }));
 
     User.findById(req.user._id).exec((user) => {
