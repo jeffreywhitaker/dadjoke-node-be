@@ -24,14 +24,31 @@ export function createThread(req, res) {
 
     newThread
       .save()
-      .then((thread) => res.status(200).json(thread))
+      .then((thread) => {
+        // TODO: use deserialized user
+        User.findById(req.user._id).exec((err, user) => {
+          user.mbThreadCount++;
+          user.save();
+          res.status(200).json(thread);
+        });
+      })
       .catch((error) => res.status(400).json({ error }));
-
-    User.findById(req.user._id).exec((user) => {
-      user.mbThreadCount++;
-      user.save();
-    });
   } catch (error) {
     return res.status(400).json({ error });
   }
+}
+
+export function getThreads(req, res) {
+  MbThread.find().exec((err, threads) => {
+    res.status(200).json(threads);
+  });
+}
+
+export function deleteThread(req, res) {
+  MbThread.findById(req.params._id).exec((err, thread) => {
+    // handle if not the user's own thread
+    thread.remove((err) => {
+      res.sendStatus(200);
+    });
+  });
 }
