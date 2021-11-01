@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import mbText from "./mbText.js";
 const Schema = mongoose.Schema;
 
 const mbComment = new Schema({
@@ -7,7 +6,7 @@ const mbComment = new Schema({
   creatorName: { type: String, ref: "User" },
   threadId: { type: mongoose.Schema.Types.ObjectId, ref: "MbThread" },
   text: { type: String, default: "" },
-  textHistory: { type: [mbText], default: [] },
+  textHistory: [{ text: String, createdAt: { type: Date, required: true } }],
   createdAt: { type: Date, default: Date.now },
 });
 
