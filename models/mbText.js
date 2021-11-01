@@ -6,4 +6,4 @@ const mbTextSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-export default mongoose.model("MbText", mbTextSchema);
+export default mbTextSchema;
