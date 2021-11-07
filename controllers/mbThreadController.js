@@ -40,8 +40,9 @@ export function createThread(req, res) {
 
 export function getThreads(req, res) {
   MbThread.find()
-    .select("creatorName", "title", "creator", "lastReply", "commentCount", "createdAt")
-    .populate({ path: "lastReply", populate: { path: "creator" } })
+    .select("creatorName title commentCount viewCount createdAt")
+    .populate({ path: "creator", select: "image" })
+    .populate({ path: "lastReply", select: "creator", populate: { path: "creator" } })
     .exec((error, threads) => {
       if (error) res.status(400).json({ error });
       res.status(200).json(threads);
