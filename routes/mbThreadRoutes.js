@@ -4,6 +4,7 @@ import {
   createThread,
   deleteThread,
   getThreads,
+  getThread,
   // updateTopic,
 } from "../controllers/mbThreadController.js";
 
@@ -13,6 +14,11 @@ const router = express.Router();
 // @desc Get list of public or private mb threads
 // @access Public or Private
 router.get("/", getThreads);
+
+// @route GET api/mbthread/:_id
+// @desc Get a single thread
+// @access Public or Private
+router.get("/:_id", getThread);
 
 // @route POST api/mbthread/
 // @desc Create a topic in the message board

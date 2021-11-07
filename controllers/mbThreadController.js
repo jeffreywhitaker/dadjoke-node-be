@@ -49,6 +49,17 @@ export function getThreads(req, res) {
     });
 }
 
+export function getThread(req, res) {
+  console.log("get thread, id is", req.params._id);
+  MbThread.findById(req.params._id)
+    .populate("creator", "image")
+    .populate("comments")
+    .exec((err, thread) => {
+      console.log("thread found is", thread);
+      res.status(200).json(thread);
+    });
+}
+
 export function deleteThread(req, res) {
   MbThread.findById(req.params._id).exec((err, thread) => {
     // handle if not the user's own thread
