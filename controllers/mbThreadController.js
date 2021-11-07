@@ -39,9 +39,13 @@ export function createThread(req, res) {
 }
 
 export function getThreads(req, res) {
-  MbThread.find().exec((err, threads) => {
-    res.status(200).json(threads);
-  });
+  MbThread.find()
+    .select("creatorName", "title", "creator", "lastReply", "commentCount", "createdAt")
+    .populate({ path: "lastReply", populate: { path: "creator" } })
+    .exec((error, threads) => {
+      if (error) res.status(400).json({ error });
+      res.status(200).json(threads);
+    });
 }
 
 export function deleteThread(req, res) {
