@@ -1,5 +1,6 @@
 import MbComment from "../models/mbComment.js";
 import User from "../models/user.js";
+import Thread from "../models/mbThread.js";
 
 export function createComment(req, res) {
   // body is an obj with text
