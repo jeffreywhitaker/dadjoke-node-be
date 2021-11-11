@@ -17,7 +17,7 @@ const router = express.Router();
 // @route POST api/mbtopic/
 // @desc Create a topic in the message board
 // @access Private
-router.post("/add", createComment);
+router.post("/", createComment);
 
 // @route PUT api/mbtopic/:_id
 // @desc Finds board topic via ID and updates

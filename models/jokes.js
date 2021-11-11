@@ -11,12 +11,8 @@ const jokeSchema = new Schema({
 
   // votes
   karma: { type: Number, default: 0 },
-  usersUpvoting: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "User", unique: true },
-  ],
-  usersDownvoting: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "User", unique: true },
-  ],
+  usersUpvoting: [{ type: mongoose.Schema.Types.ObjectId, ref: "User", unique: true }],
+  usersDownvoting: [{ type: mongoose.Schema.Types.ObjectId, ref: "User", unique: true }],
 
   // misc
   commentCount: { type: Number, default: 0 },
