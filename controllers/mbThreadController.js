@@ -39,13 +39,23 @@ export function createThread(req, res) {
 }
 
 export function getThreads(req, res) {
+  // TODO: pagination
+
   MbThread.find()
     .select("creatorName title commentCount viewCount createdAt")
     .populate({ path: "creator", select: "image" })
     .populate("comments")
+    .populate({ path: "lastComment", populate: { path: "creator" } })
     .populate({ path: "lastReply", select: "creator", populate: { path: "creator" } })
     .exec((error, threads) => {
       if (error) res.status(400).json({ error });
+
+      threads.forEach((threadObj) => {
+        if (threadObj.isDeleted) {
+          threadObj.textHistory = [];
+          threadObj.titleHistory = [];
+        }
+      });
       res.status(200).json(threads);
     });
 }
@@ -56,14 +66,15 @@ export function getThread(req, res) {
     .populate("creator", "image createdAt mbThreadCount mbCommentCount")
     .populate({
       path: "comments",
-      select: "creatorName text",
+      select: "creatorName text createdAt",
       populate: {
         path: "creator",
         select: "image createdAt mbThreadCount mbCommentCount",
       },
     })
     .exec((err, thread) => {
-      console.log("thread found is", thread);
+      thread.viewCount++;
+      thread.save();
       res.status(200).json(thread);
     });
 }
@@ -71,8 +82,20 @@ export function getThread(req, res) {
 export function deleteThread(req, res) {
   MbThread.findById(req.params._id).exec((err, thread) => {
     // handle if not the user's own thread
-    thread.remove((err) => {
-      res.sendStatus(200);
-    });
+
+    if (req.user._id !== thread.creator) {
+      res.send(401).json({ error: "This is not your thread" });
+    }
+
+    if (thread.isDeleted === true) {
+      res.send(400).json({ error: "Thread already deleted" });
+    }
+
+    thread.title = "DELETED";
+    thread.text = "DELETED";
+    thread.isDeleted = true;
+    thread.lastEditedAt = Date.now();
+    thread.save();
+    res.sendStatus(200);
   });
 }
