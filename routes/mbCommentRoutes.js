@@ -2,7 +2,7 @@ import express from "express";
 
 import {
   createComment,
-  // deleteTopic,
+  deleteComment,
   // getTopics,
   // updateTopic,
 } from "../controllers/mbCommentController.js";
@@ -27,7 +27,7 @@ router.post("/", createComment);
 // @route DELETE api/jokes/:id
 // @desc Finds board topic via ID and deletes it
 // @access Private
-// router.delete("/:_id", deleteThread);
+router.delete("/:_id", deleteComment);
 
 // @route POST api/jokes/vote/:id
 // @desc Adds an upvote or downvote (or no vote) to the joke
