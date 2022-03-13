@@ -78,3 +78,27 @@ export function deleteComment(req, res) {
     return res.status(400).json({ error });
   }
 }
+
+export function updateComment(req, res) {
+  try {
+    if (!req.user || !req.user._id) {
+      return res.status(400).json({ error: "unable to find user" });
+    }
+
+    const id = req.params.id;
+
+    if (!id) return res.status(400).json({ error: "must include comment id" });
+
+    const commentUpdated = req.body.comment;
+
+    MbComment.findById(id).exec((error, comment) => {
+      // TODO: add this
+      // update comment and save old text
+      // update counters as necessary
+
+      return res.status(200).json({ comment });
+    });
+  } catch (error) {
+    return res.status(400).json({ error });
+  }
+}
