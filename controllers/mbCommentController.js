@@ -92,11 +92,20 @@ export function updateComment(req, res) {
     const commentUpdated = req.body.comment;
 
     MbComment.findById(id).exec((error, comment) => {
-      // TODO: add this
-      // update comment and save old text
-      // update counters as necessary
+      if (error) return res.status(400).json({ error });
+      if (comment.creator.toString() !== req.user._id.toString()) {
+        return res.status(400).json({ error: "this is not your comment" });
+      }
 
-      return res.status(200).json({ comment });
+      comment.textHistory.push({ text: comment.text, createdAt: comment.lastEditedAt });
+      comment.text = commentUpdated.text;
+      comment.lastEditedAt = Date.now();
+      comment
+        .save()
+        .then((comment) => {
+          return res.status(200).json({ comment });
+        })
+        .catch((error) => res.status(400).json({ error }));
     });
   } catch (error) {
     return res.status(400).json({ error });
