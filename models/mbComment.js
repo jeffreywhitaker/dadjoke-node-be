@@ -6,7 +6,9 @@ const mbComment = new Schema({
   creatorName: { type: String, ref: "User" },
   threadId: { type: mongoose.Schema.Types.ObjectId, ref: "MbThread" },
   text: { type: String, default: "" },
+  isDeleted: { type: Boolean, default: false },
   textHistory: [{ text: String, createdAt: { type: Date, default: Date.now } }],
+  lastEditedAt: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now },
 });
 
