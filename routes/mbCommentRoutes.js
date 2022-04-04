@@ -4,7 +4,7 @@ import {
   createComment,
   deleteComment,
   // getTopics,
-  // updateTopic,
+  updateComment,
 } from "../controllers/mbCommentController.js";
 
 const router = express.Router();
@@ -19,10 +19,10 @@ const router = express.Router();
 // @access Private
 router.post("/", createComment);
 
-// @route PUT api/mbtopic/:_id
-// @desc Finds board topic via ID and updates
+// @route PUT api/mbcomment/
+// @desc Finds comment via ID and updates
 // @access Private
-// router.put("/:_id", updateThread);
+router.put("/", updateComment);
 
 // @route DELETE api/jokes/:id
 // @desc Finds board topic via ID and deletes it

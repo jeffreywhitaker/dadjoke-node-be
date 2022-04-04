@@ -85,11 +85,11 @@ export function updateComment(req, res) {
       return res.status(400).json({ error: "unable to find user" });
     }
 
-    const id = req.params.id;
+    const id = req.body.commentId;
 
     if (!id) return res.status(400).json({ error: "must include comment id" });
 
-    const commentUpdated = req.body.comment;
+    const newText = req.body.text;
 
     MbComment.findById(id).exec((error, comment) => {
       if (error) return res.status(400).json({ error });
@@ -98,12 +98,12 @@ export function updateComment(req, res) {
       }
 
       comment.textHistory.push({ text: comment.text, createdAt: comment.lastEditedAt });
-      comment.text = commentUpdated.text;
+      comment.text = newText;
       comment.lastEditedAt = Date.now();
       comment
         .save()
         .then((comment) => {
-          return res.status(200).json({ comment });
+          return res.status(200).json(comment);
         })
         .catch((error) => res.status(400).json({ error }));
     });
