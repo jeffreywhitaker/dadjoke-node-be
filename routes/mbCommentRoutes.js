@@ -2,9 +2,9 @@ import express from "express";
 
 import {
   createComment,
-  // deleteTopic,
+  deleteComment,
   // getTopics,
-  // updateTopic,
+  updateComment,
 } from "../controllers/mbCommentController.js";
 
 const router = express.Router();
@@ -19,15 +19,15 @@ const router = express.Router();
 // @access Private
 router.post("/", createComment);
 
-// @route PUT api/mbtopic/:_id
-// @desc Finds board topic via ID and updates
+// @route PUT api/mbcomment/
+// @desc Finds comment via ID and updates
 // @access Private
-// router.put("/:_id", updateThread);
+router.put("/", updateComment);
 
 // @route DELETE api/jokes/:id
 // @desc Finds board topic via ID and deletes it
 // @access Private
-// router.delete("/:_id", deleteThread);
+router.delete("/:_id", deleteComment);
 
 // @route POST api/jokes/vote/:id
 // @desc Adds an upvote or downvote (or no vote) to the joke
