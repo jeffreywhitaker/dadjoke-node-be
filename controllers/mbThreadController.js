@@ -66,7 +66,7 @@ export function getThread(req, res) {
     .populate("creator", "image createdAt mbThreadCount mbCommentCount")
     .populate({
       path: "comments",
-      select: "creatorName text createdAt",
+      select: "creatorName text createdAt textHistory", // TODO: this should eventually be separate endpoint for textHistory
       populate: {
         path: "creator",
         select: "image createdAt mbThreadCount mbCommentCount",
