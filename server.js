@@ -33,9 +33,10 @@ var corsOptions = {
       callback(null, true);
     } else {
       // callback(new Error(`Not allowed by CORS, origin is: ${origin}`));
-      res
-        .status(400)
-        .json({ error: `Origin ${origin} is not allowed by CORS policy` });
+      callback(new Error("Not allowed by CORS"));
+      // res
+      //   .status(400)
+      //   .json({ error: `Origin ${origin} is not allowed by CORS policy` });
     }
   },
 };
@@ -45,9 +46,7 @@ server.use(cors(corsOptions));
 server.use(helmet());
 if (process.env.NODE_ENV === "production") {
   server.use(
-    morgan(
-      "[:date[iso]] :method :url :status :res[content-length] - :response-time ms"
-    )
+    morgan("[:date[iso]] :method :url :status :res[content-length] - :response-time ms")
   );
 } else {
   server.use(morgan("dev"));
