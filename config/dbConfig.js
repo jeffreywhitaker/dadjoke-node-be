@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+import { config } from "dotenv";
+config();
+
 const MONGODB_URI = process.env.MONGODB_URI;
 
 function connectDB() {
@@ -11,10 +14,7 @@ function connectDB() {
   });
 }
 
-mongoose.connection.on(
-  "error",
-  console.error.bind(console, "connection error:")
-);
+mongoose.connection.on("error", console.error.bind(console, "connection error:"));
 mongoose.connection.once("open", () => {
   console.log("Connected to Database");
 });
