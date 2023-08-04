@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 const LocalStrategy = passportLocal.Strategy;
 import "../models/user.js";
 const User = mongoose.model("User");
+// test
 
 export default function passportConfig(passport) {
   // used to serialize the user for the session
