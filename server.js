@@ -1,6 +1,6 @@
 import express from "express";
 import morgan from "morgan";
-import cors from "cors";
+// import cors from "cors";
 import helmet from "helmet";
 import bodyParser from "body-parser";
 import passport from "passport";
@@ -21,26 +21,26 @@ const MongoStore = connectMongo(session);
 const server = express();
 
 // basic middleware
-var whitelist = [
-  "https://jeffsdadjokes.com",
-  "https://www.jeffsdadjokes.com",
-  "http://localhost:3000",
-];
-var corsOptions = {
-  credentials: true,
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      // callback(new Error(`Not allowed by CORS, origin is: ${origin}`));
-      callback(new Error("Not allowed by CORS"));
-      // res
-      //   .status(400)
-      //   .json({ error: `Origin ${origin} is not allowed by CORS policy` });
-    }
-  },
-};
-server.use(cors(corsOptions));
+// var whitelist = [
+//   "https://jeffsdadjokes.com",
+//   "https://www.jeffsdadjokes.com",
+//   "http://localhost:3000",
+// ];
+// var corsOptions = {
+//   credentials: true,
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       // callback(new Error(`Not allowed by CORS, origin is: ${origin}`));
+//       callback(new Error("Not allowed by CORS"));
+//       // res
+//       //   .status(400)
+//       //   .json({ error: `Origin ${origin} is not allowed by CORS policy` });
+//     }
+//   },
+// };
+// server.use(cors(corsOptions));
 
 // helmet and morgan
 server.use(helmet());
