@@ -7,7 +7,7 @@ import "../models/user.js";
 const User = mongoose.model("User");
 // test
 
-export default function passportConfig(passport) {
+export default function passportConfig(passport, server) {
   // used to serialize the user for the session
   passport.serializeUser(function (user, done) {
     console.log("serializing user: ", user);
@@ -55,4 +55,7 @@ export default function passportConfig(passport) {
       }
     )
   );
+
+  server.use(passport.initialize());
+  server.use(passport.session());
 }
