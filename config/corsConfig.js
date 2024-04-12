@@ -1,10 +1,6 @@
 import cors from "cors";
 
-const isProduction = process.env.NODE_ENV === "production";
-
 export function setupCors(server) {
-  if (!isProduction) return;
-
   var whitelist = [
     "https://jeffsdadjokes.com",
     "https://www.jeffsdadjokes.com",
