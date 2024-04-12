@@ -64,13 +64,13 @@ router.put("/profile/description", updateUserDescription);
 router.post("/follow/:username", followOtherUser);
 router.post("/unfollow/:username", unfollowOtherUser);
 
-const log = (req, res, next) => {
-  console.log("got to here");
-  console.log(req.body);
-  next();
-};
+// const log = (req, res, next) => {
+//   console.log("got to here");
+//   console.log(req.body);
+//   next();
+// };
 
-router.post("/profile/avatar", log, fileUpload(), uploadUserAvatar);
+router.post("/profile/avatar", fileUpload(), uploadUserAvatar);
 // hack
 router.get("/profile/avatar/:username", getUserAvatar);
 

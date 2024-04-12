@@ -61,7 +61,6 @@ export function getThreads(req, res) {
 }
 
 export function getThread(req, res) {
-  console.log("get thread, id is", req.params._id);
   MbThread.findById(req.params._id)
     .populate("creator", "image createdAt mbThreadCount mbCommentCount")
     .populate({

@@ -5,7 +5,6 @@ import User from "../models/user.js";
 import async from "async";
 
 export function addComment(req, res) {
-  console.log("in add comment");
   if (!req.user) {
     return res.status(400).json({ error: "you must be logged in" });
   }
@@ -14,14 +13,12 @@ export function addComment(req, res) {
     return res.status(400).json({ error: "must include data and a joke id" });
   }
 
-  console.log("point 1");
   const newComment = new Comment({
     creatorName: req.user.username,
     joke: req.body.jokeID,
     data: req.body.data,
   });
 
-  console.log("point 2");
   newComment.save().then((comment) => {
     async.parallel(
       {
@@ -41,7 +38,6 @@ export function addComment(req, res) {
         },
       },
       function (error) {
-        console.log("point 3");
         if (error) {
           return res.status(400).json({ error });
         }
@@ -74,9 +70,7 @@ export function getComments(req, res) {
 
       // remove extra and determine if next
       const responseObj = {
-        comments: commentArr
-          ? commentArr.slice(0, responseCriteria.resultsPerPage)
-          : [],
+        comments: commentArr ? commentArr.slice(0, responseCriteria.resultsPerPage) : [],
         page: responseCriteria.page,
         resultsPerPage: responseCriteria.resultsPerPage,
         hasNextPage: commentArr.length > responseCriteria.resultsPerPage,
