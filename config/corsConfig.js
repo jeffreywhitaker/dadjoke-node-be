@@ -1,12 +1,13 @@
 import cors from "cors";
 
 export function setupCors(server) {
-  var whitelist = [
+  const whitelist = [
     "https://jeffsdadjokes.com",
     "https://www.jeffsdadjokes.com",
     "http://localhost:3000",
   ];
-  var corsOptions = {
+
+  const corsOptions = {
     credentials: true,
     origin: function (origin, callback) {
       if (whitelist.indexOf(origin) !== -1) {
