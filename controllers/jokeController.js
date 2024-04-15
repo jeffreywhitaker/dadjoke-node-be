@@ -34,7 +34,7 @@ export function createJoke(req, res) {
   }
 }
 
-export function getJokes(req, res) {
+export async function getJokes(req, res) {
   try {
     // get the query params
     const isprivate = req.query.isprivate === "true";
@@ -76,105 +76,103 @@ export function getJokes(req, res) {
     }
 
     // access db and send
-    DadJoke.find(criteria)
+    const jokes = await DadJoke.find(criteria)
       .select("-creator -usersUpvoting -usersDownvoting")
       .sort(responseCriteria.sortBy)
       .limit(parseInt(responseCriteria.resultsPerPage) + 1)
       .skip((responseCriteria.page - 1) * responseCriteria.resultsPerPage)
-      .lean()
-      .exec((err, jokes) => {
-        if (err) throw err;
+      .lean();
 
-        // if a logged in user is making this request
-        if (req.user) {
-          const user = req.user;
+    // if a logged in user is making this request
+    if (req.user) {
+      const user = req.user;
 
-          jokes.forEach((joke) => {
-            // handle user's vote
-            if (user.jokesUpvoted.indexOf(joke._id) !== -1) {
-              joke.userVote = "1";
-            } else if (user.jokesDownvoted.indexOf(joke._id) !== -1) {
-              joke.userVote = "-1";
-            } else {
-              joke.userVote = "0";
-            }
-
-            // handle user follow
-            // if the user is not following the joke creator
-            // TODO: make this better
-            if (!isprivate) {
-              if (req.user.followingUsers.indexOf(joke.username) === -1) {
-                joke.userFollowingCreator = false;
-              } else {
-                joke.userFollowingCreator = true;
-              }
-            }
-          });
+      jokes.forEach((joke) => {
+        // handle user's vote
+        if (user.jokesUpvoted.indexOf(joke._id) !== -1) {
+          joke.userVote = "1";
+        } else if (user.jokesDownvoted.indexOf(joke._id) !== -1) {
+          joke.userVote = "-1";
+        } else {
+          joke.userVote = "0";
         }
 
-        // create the response object
-        let responseObj = {
-          // if there are more jokes, only take what's requested
-          jokes: jokes ? jokes.slice(0, responseCriteria.resultsPerPage) : [],
-          page: responseCriteria.page,
-          resultsPerPage: responseCriteria.resultsPerPage,
-          // determine if there are more jokes
-          hasNextPage: jokes.length > responseCriteria.resultsPerPage,
-        };
-
-        // send
-        res.status(200).json(responseObj);
+        // handle user follow
+        // if the user is not following the joke creator
+        // TODO: make this better
+        if (!isprivate) {
+          if (req.user.followingUsers.indexOf(joke.username) === -1) {
+            joke.userFollowingCreator = false;
+          } else {
+            joke.userFollowingCreator = true;
+          }
+        }
       });
+    }
+
+    // create the response object
+    let responseObj = {
+      // if there are more jokes, only take what's requested
+      jokes: jokes ? jokes.slice(0, responseCriteria.resultsPerPage) : [],
+      page: responseCriteria.page,
+      resultsPerPage: responseCriteria.resultsPerPage,
+      // determine if there are more jokes
+      hasNextPage: jokes.length > responseCriteria.resultsPerPage,
+    };
+
+    // send
+    res.status(200).json(responseObj);
   } catch (error) {
     res.status(500).json({ error });
   }
 }
 
-export function updateJoke(req, res) {
+export async function updateJoke(req, res) {
   // parse url?
 
   // access db and send
-  DadJoke.findById(req.params._id).exec((err, joke) => {
-    // make sure it's their joke
-    if (joke.creator.toString() !== req.user._id.toString()) {
-      return res.status(400).json({ error: "this is not your joke" });
-    }
+  const joke = await DadJoke.findById(req.params._id);
 
-    joke.dadjokequestion = req.body.dadjokequestion;
-    joke.dadjokeanswer = req.body.dadjokeanswer;
-    joke.keywords = req.body.keywords;
-    joke.isprivate = req.body.isprivate;
-
-    joke
-      .save()
-      .then((joke) => {
-        res.status(200).json(joke);
-      })
-      .catch((error) => res.status(400).json({ error }));
-  });
-}
-
-export function deleteJoke(req, res) {
-  // parse url?
-  if (!req.params._id) {
-    return res.status(400).json({ error: "Must have id" });
+  // make sure it's their joke
+  if (joke.creator.toString() !== req.user._id.toString()) {
+    return res.status(400).json({ error: "this is not your joke" });
   }
 
-  // access db and send
-  DadJoke.findById(req.params._id).exec((err, joke) => {
-    if (err) return res.status(400).json({ error });
+  joke.dadjokequestion = req.body.dadjokequestion;
+  joke.dadjokeanswer = req.body.dadjokeanswer;
+  joke.keywords = req.body.keywords;
+  joke.isprivate = req.body.isprivate;
+
+  joke
+    .save()
+    .then((joke) => {
+      res.status(200).json(joke);
+    })
+    .catch((error) => res.status(400).json({ error }));
+}
+
+export async function deleteJoke(req, res) {
+  try {
+    // parse url?
+    if (!req.params._id) {
+      return res.status(400).json({ error: "Must have id" });
+    }
+
+    // access db and send
+    const joke = await DadJoke.findById(req.params._id);
+
     if (parseInt(joke.creator) !== parseInt(req.user._id)) {
       return res.status(400).json({ error: "this is not your joke " });
     }
 
-    joke.remove((err) => {
-      if (err) return res.status(400).json({ error });
-      res.sendStatus(200);
-    });
-  });
+    await joke.deleteOne();
+    res.sendStatus(200);
+  } catch (error) {
+    return res.status(400).json({ error });
+  }
 }
 
-export function updateJokeVote(req, res) {
+export async function updateJokeVote(req, res) {
   // get the new vote from the user (1, 0, or -1)
   const user = req.user;
   if (!user) {
@@ -185,62 +183,57 @@ export function updateJokeVote(req, res) {
 
   let jokeToReturn;
 
-  DadJoke.findById(jokeID)
-    // .lean(false)
-    .exec((err, joke) => {
-      if (err) return res.status(400).json(err);
-      // handle the vote
-      if (vote === "1") {
-        // upvote
-        if (!joke.usersUpvoting.includes(user._id)) {
-          joke.usersUpvoting.push(user._id);
-        }
-
-        joke.usersDownvoting.pull(user._id);
-      } else if (vote === "0") {
-        // remove votes
-        joke.usersUpvoting.pull(user._id);
-        joke.usersDownvoting.pull(user._id);
-      } else if (vote === "-1") {
-        // downvote
-        joke.usersUpvoting.pull(user._id);
-
-        if (!joke.usersDownvoting.includes(user._id)) {
-          joke.usersDownvoting.push(user._id);
-        }
-      }
-
-      // calculate the new karma
-      joke.karma = joke.usersUpvoting.length - joke.usersDownvoting.length;
-
-      // save
-      jokeToReturn = joke;
-      joke.save();
-    });
-
-  // add joke ID to appropriate array on user (delete from other array, if necc)
-  User.findById(user._id).exec((err, user) => {
-    if (err) res.status(400).json(err);
-    // handle the joke
+  try {
+    const joke = await DadJoke.findById(jokeID);
     if (vote === "1") {
       // upvote
-      user.jokesUpvoted.push(jokeID);
-      user.jokesDownvoted.pull(jokeID);
+      if (!joke.usersUpvoting.includes(user._id)) {
+        joke.usersUpvoting.push(user._id);
+      }
+
+      joke.usersDownvoting.pull(user._id);
     } else if (vote === "0") {
       // remove votes
-      user.jokesUpvoted.pull(jokeID);
-      user.jokesDownvoted.pull(jokeID);
+      joke.usersUpvoting.pull(user._id);
+      joke.usersDownvoting.pull(user._id);
     } else if (vote === "-1") {
       // downvote
-      user.jokesUpvoted.pull(jokeID);
-      user.jokesDownvoted.push(jokeID);
+      joke.usersUpvoting.remove(user._id);
+
+      if (!joke.usersDownvoting.includes(user._id)) {
+        joke.usersDownvoting.push(user._id);
+      }
+    }
+
+    // calculate the new karma
+    joke.karma = joke.usersUpvoting.length - joke.usersDownvoting.length;
+
+    // save
+    jokeToReturn = joke;
+    await joke.save();
+
+    // add joke ID to appropriate array on user (delete from other array, if necc)
+    const user_ = await User.findById(user._id);
+
+    if (vote === "1") {
+      // upvote
+      user_.jokesUpvoted.push(jokeID);
+      user_.jokesDownvoted.pull({ _id: jokeID });
+    } else if (vote === "0") {
+      // remove votes
+      user_.jokesUpvoted.pull({ _id: jokeID });
+      user_.jokesDownvoted.pull({ _id: jokeID });
+    } else if (vote === "-1") {
+      // downvote
+      user_.jokesUpvoted.pull({ _id: jokeID });
+      user_.jokesDownvoted.push(jokeID);
     }
 
     // save
-    user.save();
-  });
+    await user_.save();
 
-  // TODO: make this async function so this res happens after waiting for db access, or use async.parallel
-  // return the joke
-  res.send(200).json(jokeToReturn);
+    res.status(200).json(jokeToReturn);
+  } catch (error) {
+    res.status(400).json(error);
+  }
 }

@@ -2,10 +2,7 @@ import Comment from "../models/comments.js";
 import DadJoke from "../models/jokes.js";
 import User from "../models/user.js";
 
-import async from "async";
-
-export function addComment(req, res) {
-  console.log("in add comment");
+export async function addComment(req, res) {
   if (!req.user) {
     return res.status(400).json({ error: "you must be logged in" });
   }
@@ -14,45 +11,32 @@ export function addComment(req, res) {
     return res.status(400).json({ error: "must include data and a joke id" });
   }
 
-  console.log("point 1");
-  const newComment = new Comment({
-    creatorName: req.user.username,
-    joke: req.body.jokeID,
-    data: req.body.data,
-  });
+  try {
+    const newComment = new Comment({
+      creatorName: req.user.username,
+      joke: req.body.jokeID,
+      data: req.body.data,
+    });
 
-  console.log("point 2");
-  newComment.save().then((comment) => {
-    async.parallel(
-      {
-        user: (next) => {
-          User.findById(req.user._id).exec((err, user) => {
-            user.commentCount++;
-            user.save();
-            next(err);
-          });
-        },
-        joke: (next) => {
-          DadJoke.findById(req.body.jokeID).exec((err, joke) => {
-            joke.commentCount++;
-            joke.save();
-            next(err);
-          });
-        },
-      },
-      function (error) {
-        console.log("point 3");
-        if (error) {
-          return res.status(400).json({ error });
-        }
+    const promises = [
+      newComment.save(),
+      User.findById(req.user._id),
+      DadJoke.findById(req.body.jokeID),
+    ];
+    const [comment, user, joke] = await Promise.all(promises);
 
-        return res.status(200).json(comment);
-      }
-    );
-  });
+    user.commentCount++;
+    user.save();
+    joke.commentCount++;
+    joke.save();
+
+    res.status(200).json(comment);
+  } catch (error) {
+    res.status(400).json({ error });
+  }
 }
 
-export function getComments(req, res) {
+export async function getComments(req, res) {
   if (!req.params.jokeID) {
     return res.status(400).json({ error: "joke id required" });
   }
@@ -63,26 +47,22 @@ export function getComments(req, res) {
     page: req.body.page || 1,
   };
 
-  Comment.find({ joke: req.params.jokeID })
+  const comments = await Comment.find({ joke: req.params.jokeID })
     .sort(responseCriteria.sortBy)
     .limit(parseInt(responseCriteria.resultsPerPage) + 1)
     .skip((responseCriteria.page - 1) * responseCriteria.resultsPerPage)
-    .lean()
-    .exec((err, commentArr) => {
-      // sort comments by creation date
-      commentArr.sort((a, b) => a.createdAt - b.createdAt);
+    .lean();
 
-      // remove extra and determine if next
-      const responseObj = {
-        comments: commentArr
-          ? commentArr.slice(0, responseCriteria.resultsPerPage)
-          : [],
-        page: responseCriteria.page,
-        resultsPerPage: responseCriteria.resultsPerPage,
-        hasNextPage: commentArr.length > responseCriteria.resultsPerPage,
-      };
+  // sort comments by creation date
+  comments.sort((a, b) => a.createdAt - b.createdAt);
 
-      // return the response
-      return res.status(200).json(responseObj);
-    });
+  // remove extra and determine if next
+  const responseObj = {
+    comments: comments ? comments.slice(0, responseCriteria.resultsPerPage) : [],
+    page: responseCriteria.page,
+    resultsPerPage: responseCriteria.resultsPerPage,
+    hasNextPage: comments.length > responseCriteria.resultsPerPage,
+  };
+
+  res.status(200).json(responseObj);
 }
