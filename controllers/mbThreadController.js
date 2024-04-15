@@ -46,7 +46,7 @@ export function getThreads(req, res) {
     .populate({ path: "creator", select: "image" })
     .populate("comments")
     .populate({ path: "lastComment", populate: { path: "creator" } })
-    .populate({ path: "lastReply", select: "creator", populate: { path: "creator" } })
+    // .populate({ path: "lastReply", select: "creator", populate: { path: "creator" } })
     .exec((error, threads) => {
       if (error) res.status(400).json({ error });
 
