@@ -2,7 +2,7 @@
   "name": "dadjoke-node-be",
   "version": "1.0.0",
   "description": "An express backend for Dadjoke",
-  "main": "dist/index.js",
+  "main": "index.ts",
   "repository": "https://github.com/jeffreywhitaker/dadjoke-node-be.git",
   "author": "Jeffrey Whitaker <jeffrey.david.whitaker@zoho.com>",
   "license": "MIT",
@@ -25,15 +25,14 @@
   },
   "scripts": {
     "build": "yarn tsc",
-    "server_old": "nodemon -r dotenv/config index.ts",
-    "server": "nodemon -r dotenv/config dist/index.js",
-    "start": "yarn run tsc && node dist/index.js"
+    "server": "nodemon --esm -r dotenv/config index.ts",
+    "start": "yarn tsc && node dist/index.js"
   },
   "type": "module",
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.12.7",
-    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   }
 }
