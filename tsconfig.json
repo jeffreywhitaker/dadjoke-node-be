@@ -1,0 +1,17 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    // "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "checkJs": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "paths": { "@/controllers/*": ["/controllers/"] },
+    "skipLibCheck": true,
+    "strict": false,
+    "target": "ESNext"
+  },
+  "exclude": ["node_modules"]
+}
