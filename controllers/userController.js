@@ -82,39 +82,36 @@ export function signup(req, res, next) {
   })(req, res, next);
 }
 
-export function deleteSelf(req, res) {
+// TODO: still needs testing after migration to mongoose 7
+export async function deleteSelf(req, res) {
   try {
     const user = req.user;
     const username = user.username;
     if (!user) return res.status(400).json({ error: "No user from cookie" });
 
     // remove the jokes
-    DadJoke.find({ creator: user._id }).exec((err, jokes) => {
-      jokes.forEach((joke) => {
-        joke.destroy();
-      });
+    // TODO: use mongoose deleteMany fn
+    const jokes = await DadJoke.find({ creator: user._id });
+
+    jokes.forEach((joke) => {
+      joke.destroy();
     });
 
     // delete followed by references to this user in other users
-    user.followingUsers.forEach((username) => {
-      User.findOne({ username }).exec((error, otherUser) => {
-        if (error) return res.status(400).json({ error });
+    user.followingUsers.forEach(async (username) => {
+      const otherUser = await User.findOne({ username });
 
-        const index = otherUser.followedByUsers.indexOf(user.username);
-        otherUser.followedByUsers.splice(index, 1);
-        otherUser.save();
-      });
+      const index = otherUser.followedByUsers.indexOf(user.username);
+      otherUser.followedByUsers.splice(index, 1);
+      otherUser.save();
     });
 
     // delete the following references
-    user.followedByUsers.forEach((username) => {
-      User.findOne({ username }).exec((error, otherUser) => {
-        if (error) return res.status(400).json({ error });
-
-        const index = otherUser.followingUsers.indexOf(user.username);
-        otherUser.followingUsers.splice(index, 1);
-        otherUser.save();
-      });
+    user.followedByUsers.forEach(async (username) => {
+      const otherUser = await User.findOne({ username });
+      const index = otherUser.followingUsers.indexOf(user.username);
+      otherUser.followingUsers.splice(index, 1);
+      otherUser.save();
     });
 
     // destroy the user and send
