@@ -7,18 +7,12 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
+    "moduleResolution": "Bundler",
     "outDir": "./dist",
     "paths": { "@/controllers/*": ["/controllers/"] },
     "skipLibCheck": true,
     "strict": false,
     "target": "ESNext"
   },
-  "exclude": ["node_modules"],
-  "include": [
-    "config/**/*.ts",
-    "controllers/**/*.ts",
-    "models/**/*.ts",
-    "routes/**/*.ts",
-    "*.js"
-  ]
+  "exclude": ["node_modules"]
 }
