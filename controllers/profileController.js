@@ -3,7 +3,6 @@ import DadJoke from "../models/jokes.js";
 
 export async function getProfileStats(req, res) {
   try {
-    console.log("user is: ", req.user);
     const username = req.params.username;
     const user = await User.findOne({ username });
     const objToSend = {};
@@ -69,51 +68,42 @@ export async function uploadUserAvatar(req, res) {
       return res.status(400).json({ error: "you must select a file" });
     }
 
-    console.log("point 1");
+    const user = await User.findById(userId);
+    user.image.data = req.files.image.data;
+    user.image.contentType = req.files.image.mimetype;
 
-    User.findById(userId).exec((err, user) => {
-      console.log("point 2");
-      user.image.data = req.files.image.data;
-      console.log("point 3");
-
-      user.image.contentType = req.files.image.mimetype;
-      console.log("point 4");
-      user.save();
-      return res.status(200).json({ image: user.image.data });
-    });
+    user.save();
+    return res.status(200).json({ image: user.image.data });
   } catch (error) {
     return res.status(400).json({ error });
   }
 }
 
-export function getUserAvatar(req, res) {
+export async function getUserAvatar(req, res) {
   try {
     const username = req.params.username;
-    User.findOne({ username }).exec((error, user) => {
-      if (error) return res.status(400).json({ error });
-      const imageToSend = user.image;
+    const user = await User.findOne({ username });
+    const imageToSend = user.image;
 
-      // res.set("Content-Type", imageToSend.contentType);
-      res.contentType("json");
-      // TODO: put behind cors and fix this
-      res.set("Access-Control-Allow-Credentials", true);
-      res.send(imageToSend);
-    });
+    // res.set("Content-Type", imageToSend.contentType);
+    res.contentType("json");
+    // TODO: put behind cors and fix this
+    res.set("Access-Control-Allow-Credentials", true);
+    res.send(imageToSend);
   } catch (error) {
     res.status(400).json({ error });
   }
 }
 
-export function deleteUserAvatar(req, res) {
+export async function deleteUserAvatar(req, res) {
   try {
     const userId = req.user._id;
-    User.findById(userId).exec((error, user) => {
-      // delete the user image
-      user.image = null;
-      user.save();
+    const user = await User.findById(userId);
+    // delete the user image
+    user.image = null;
+    user.save();
 
-      res.sendStatus(200);
-    });
+    res.sendStatus(200);
   } catch (error) {
     res.status(400).json({ error });
   }
