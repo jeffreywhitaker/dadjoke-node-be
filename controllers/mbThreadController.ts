@@ -23,7 +23,7 @@ export async function createThread(req, res) {
     });
 
     newThread.save().then(async (thread) => {
-      const user = await User.findById(req.user._id);
+      const user: any = await User.findById(req.user._id);
       user.mbThreadCount++;
       user.save();
       res.status(200).json(thread);
@@ -53,7 +53,7 @@ export async function getThreads(req, res) {
 }
 
 export async function getThread(req, res) {
-  const thread = await MbThread.findById(req.params._id)
+  const thread: any = await MbThread.findById(req.params._id)
     .populate("creator", "image createdAt mbThreadCount mbCommentCount")
     .populate({
       path: "comments",
@@ -72,7 +72,7 @@ export async function getThread(req, res) {
 // TODO: implement on the front end
 // make sure everything that needs deleted on back end is deleted
 export async function deleteThread(req, res) {
-  const thread = await MbThread.findById(req.params._id);
+  const thread: any = await MbThread.findById(req.params._id);
 
   if (req.user._id !== thread.creator) {
     res.send(401).json({ error: "This is not your thread" });
@@ -85,7 +85,7 @@ export async function deleteThread(req, res) {
   thread.title = "DELETED";
   thread.text = "DELETED";
   thread.isDeleted = true;
-  thread.lastEditedAt = Date.now();
+  thread.lastEditedAt = new Date();
   thread.save();
   res.sendStatus(200);
 }

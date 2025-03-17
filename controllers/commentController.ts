@@ -20,7 +20,7 @@ export async function addComment(req, res) {
 
     const promises = [
       newComment.save(),
-      User.findById(req.user._id),
+      User.findById(req.user._id) as any,
       DadJoke.findById(req.body.jokeID),
     ];
     const [comment, user, joke] = await Promise.all(promises);
@@ -54,7 +54,7 @@ export async function getComments(req, res) {
     .lean();
 
   // sort comments by creation date
-  comments.sort((a, b) => a.createdAt - b.createdAt);
+  comments.sort((a, b) => Number(a.createdAt) - Number(b.createdAt));
 
   // remove extra and determine if next
   const responseObj = {
