@@ -12,6 +12,8 @@
     "paths": { "@/controllers/*": ["/controllers/"] },
     "skipLibCheck": true,
     "strict": false,
+    "strictNullChecks": true,
+    "baseUrl": "./",
     "target": "ESNext"
   },
   "exclude": ["node_modules", "dist"]
