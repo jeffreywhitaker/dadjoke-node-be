@@ -9,7 +9,7 @@ export async function followOtherUser(req, res) {
   try {
     // get user you're following, and current user
     const usernameToFollow = req.params.username;
-    const userToFollow = await User.findOne({ username: usernameToFollow });
+    const userToFollow: any = await User.findOne({ username: usernameToFollow });
     const currentUser = req.user;
 
     // add to current user array
@@ -38,7 +38,7 @@ export async function unfollowOtherUser(req, res) {
 
   try {
     const usernameToUnfollow = req.params.username;
-    const userToUnfollow = await User.findOne({ username: usernameToUnfollow });
+    const userToUnfollow: any = await User.findOne({ username: usernameToUnfollow });
     const currentUser = req.user;
 
     // remove from current user array

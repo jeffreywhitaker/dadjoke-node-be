@@ -4,8 +4,8 @@ import DadJoke from "../models/jokes.js";
 export async function getProfileStats(req, res) {
   try {
     const username = req.params.username;
-    const user = await User.findOne({ username });
-    const objToSend = {};
+    const user: any = await User.findOne({ username });
+    const objToSend = {} as any;
     // count number of public jokes
     objToSend.publicJokesCount = await DadJoke.countDocuments({
       creator: user._id,
@@ -68,7 +68,7 @@ export async function uploadUserAvatar(req, res) {
       return res.status(400).json({ error: "you must select a file" });
     }
 
-    const user = await User.findById(userId);
+    const user: any = await User.findById(userId);
     user.image.data = req.files.image.data;
     user.image.contentType = req.files.image.mimetype;
 
@@ -82,7 +82,7 @@ export async function uploadUserAvatar(req, res) {
 export async function getUserAvatar(req, res) {
   try {
     const username = req.params.username;
-    const user = await User.findOne({ username });
+    const user: any = await User.findOne({ username });
     const imageToSend = user.image;
 
     // res.set("Content-Type", imageToSend.contentType);
@@ -98,7 +98,7 @@ export async function getUserAvatar(req, res) {
 export async function deleteUserAvatar(req, res) {
   try {
     const userId = req.user._id;
-    const user = await User.findById(userId);
+    const user: any = await User.findById(userId);
     // delete the user image
     user.image = null;
     user.save();
